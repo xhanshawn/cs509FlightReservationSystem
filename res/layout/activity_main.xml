@@ -1,0 +1,87 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    tools:context="${relativePackage}.${activityClass}" >
+   	
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true" >
+		
+		
+
+		 
+			<TextView
+		    android:id="@+id/display2"
+		    android:layout_width="280dp"
+		    android:layout_height="280dp"
+		    android:layout_gravity="top|center"
+		    android:layout_marginTop="10dp"
+		    android:gravity="center"
+		    android:keepScreenOn="true"
+
+		    android:text="swipe to get a new pad"
+		    android:textColor="#33b5e5"
+		    android:textSize="20sp"
+		    android:background="@drawable/drag_background"/>
+			
+		
+		
+		<LinearLayout
+		    android:layout_width="match_parent"
+		    android:layout_height="match_parent"
+	
+			>
+		<ImageView
+		    android:layout_width="144dp"
+		    android:layout_height="76.8dp"
+		    android:layout_gravity="bottom"
+		    android:layout_marginBottom="2dp"
+		    android:layout_marginLeft="59dp"
+		    android:background="@drawable/icon_background"
+		    android:scaleType="fitEnd" 
+		    />
+		
+		</LinearLayout>
+		
+		
+		
+			<TextView
+		    android:id="@+id/display1"
+		    android:layout_width="280dp"
+		    android:layout_height="280dp"
+		    android:layout_gravity="top|center"
+		    android:layout_marginTop="10dp"
+		    android:gravity="center"
+		    android:keepScreenOn="true"
+
+		    android:text="swipe to get a new pad"
+		    android:textColor="#33b5e5"
+		    android:textSize="20sp"
+		    android:background="@drawable/drag_background"/>
+		
+		
+		
+		<Button
+		    android:id="@+id/like"
+		    style="?metaButtonBarButtonStyle"
+		    android:layout_width="60dp"
+		    android:layout_height="60dp"
+		    android:layout_gravity="bottom|center_horizontal"
+		    android:layout_marginBottom="10dp"
+		    android:background="@drawable/like_pencil" />
+		<Button
+		    android:id="@+id/last"
+		    style="?metaButtonBarButtonStyle"
+		    android:layout_width="50dp"
+		    android:layout_height="50dp"
+		    android:layout_gravity="bottom|left"
+		    android:layout_marginBottom="14.5dp"
+		    android:layout_marginLeft="75dp"
+		    android:background="@drawable/last_icon" />
+	
+    </FrameLayout>
+	
+
+</RelativeLayout>
