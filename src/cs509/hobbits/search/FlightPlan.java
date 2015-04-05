@@ -14,19 +14,25 @@ public class FlightPlan {
 	final private static boolean FIRST = true;
 	final private static boolean COACH = false;
 	
-	private ArrayList<Flight> plan;
-	private int stopover;
+	private ArrayList<Flight> plan = new ArrayList<Flight>();
+	private ArrayList<Flight> depart_plan = new ArrayList<Flight>();
+	private ArrayList<Flight> return_plan = new ArrayList<Flight>();
+
+	
+	private int stopover=0;;
 	private float fir_price;
 	private float coa_price;
+	private boolean round_trip = false;
 	
 	public FlightPlan(Flight initial_flight){
 		
-		plan = new ArrayList<Flight>();
-		plan.add(initial_flight);
 		stopover=0;
-		fir_price = initial_flight.getPrice(FIRST);
-		coa_price = initial_flight.getPrice(COACH);
+		if(initial_flight!=null){
+			plan.add(initial_flight);
 		
+			fir_price = initial_flight.getPrice(FIRST);
+			coa_price = initial_flight.getPrice(COACH);
+		}
 	}
 	
 	
@@ -35,7 +41,6 @@ public class FlightPlan {
 		if (new_flight==null)   return false;
 		
 		plan.add(new_flight);
-		stopover++;
 		
 		fir_price += new_flight.getPrice(FIRST);
 		coa_price += new_flight.getPrice(COACH);
@@ -66,6 +71,7 @@ public class FlightPlan {
 		flights = new_plan.getPlan();
 		
 		for (int i=0; i<flights.size(); i++){
+
 			this.addFlight(flights.get(i));
 		}
 		
@@ -78,8 +84,37 @@ public class FlightPlan {
 	}
 	
 	public int getStopOver(){
+		
+		if(round_trip){
+			stopover = depart_plan.size() + return_plan.size() -2;
+		}else{
+			stopover = plan.size()-1;
+		}
 		return stopover;
 	}
 	
 	
+	public void buildReturnPlan(FlightPlan _depart_plan, FlightPlan _return_plan){
+		round_trip=true;
+		
+		depart_plan = _depart_plan.getPlan();
+		return_plan = _return_plan.getPlan();
+
+		
+		fir_price = _depart_plan.getPrice(FIRST) + _return_plan.getPrice(FIRST);
+		coa_price = _depart_plan.getPrice(COACH) + _return_plan.getPrice(COACH);
+		
+	}
+	
+	
+	public boolean isRoundTrip(){
+		return round_trip;
+	}
+	
+	public ArrayList<Flight> getDepartPlan(){
+		return depart_plan;
+	}
+	public ArrayList<Flight> getReturnPlan(){
+		return return_plan;
+	}
 }

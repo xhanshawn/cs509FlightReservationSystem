@@ -10,11 +10,9 @@ import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.logging.FileHandler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -38,13 +36,23 @@ import cs509.hobbits.search.Flight;
 import cs509.hobbits.search.FlightPlan;
 import cs509.hobbits.search.SearchResults;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * Servlet implementation class TeamHobbits
  */
 @WebServlet("/HobbitsFlight")
 public class TeamHobbits extends HttpServlet {
+	
+	
+	
 	private static final long serialVersionUID = 1L;
-    private static final Logger logger = Logger.getLogger(TeamHobbits.class.getName());
+	private int req_stop;
+	private boolean round_trip = false;
+	private String return_day = "";
+	private Document mDoc = null;
+	
 	
     /**
      * @see HttpServlet#HttpServlet()
@@ -53,7 +61,9 @@ public class TeamHobbits extends HttpServlet {
         super();
         // TODO Auto-generated constructor stub
     }
-
+    
+    
+    
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
@@ -65,15 +75,30 @@ public class TeamHobbits extends HttpServlet {
 		response.setHeader("Access-Control-Allow-Origin", "*");
 	    PrintWriter out = response.getWriter();
 	    
+	    
+	    
 	    String access_key = request.getParameter("AccessKey");
 	    String action = request.getParameter("action");
 	    String depart = request.getParameter("depart");
 	    String arrival = request.getParameter("arrival");
 	    String day = request.getParameter("day");
 	    String window = request.getParameter("window");
+	    String stopover = request.getParameter("stop");
+	    return_day = request.getParameter("return_day");
+
+	    
+	    if(return_day!=""&&return_day!=null) {
+	    	round_trip = true;
+	    }
+	    	
+	    if(stopover!=null)
+	    req_stop = Integer.parseInt(stopover);
 	    
 	    
-	    myLogger();
+	    
+	    if(access_key==null||action==null||depart==null||arrival==null||day==null||access_key==null)
+	    	throw new ServletException("Parameters Doesn't Match");
+	    
 	    
 	    if(access_key.equals("TeamHobbits")){
 	    	
@@ -82,19 +107,26 @@ public class TeamHobbits extends HttpServlet {
 	    		if(!depart.equals(null)&&!depart.equals(null)&&!depart.equals(null)){
 	    			
 	    			String res = "";
+	    			
+
+	    			
+	    			
+	    			
 	    			if((res = SearchFlight(depart,arrival,day))!=null
 	    					&& res!="")
 	    			{
-	    				response.setContentType("text/xml");
+	    				response.setContentType("text/XML");
 	    				out.write(res);
 	    			}else{
 	    				
 	    				response.setContentType("text/plain");
 	    				out.write("No Flight!");
 	    			}
+	    			
+	    			
 	    		}
 	    	}
-	    	
+	   	
 	    	
 			
 	    }
@@ -102,38 +134,74 @@ public class TeamHobbits extends HttpServlet {
 	    
 	    
 	}
-	private void myLogger(){
-
-		logger.setLevel(Level.FINEST);
-	    SimpleDateFormat format = new SimpleDateFormat("M-d_HHmmss");    
-	    FileHandler FileTxt=null;
-	    try {
-			FileTxt = new FileHandler("cs509_hobbits_log_"
-		                    + format.format(Calendar.getInstance().getTime()) + ".log");
-	    } catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-	    }
-	    
-	    logger.addHandler(FileTxt);	    
-	    FileTxt.setFormatter(new SimpleFormatter());
-	    logger.info("info");
-	    	
-	}
+	  	
+	
 	
 	private String SearchFlight(String _depart, String _arrival, String _day){
-  		Document mDoc = null;
+  		
   		Element mRootNode = null;
   		
-  		SearchResults search = new SearchResults(_depart,_arrival,_day);
   		
-  		ArrayList <FlightPlan> results = search.getPlans();
   		
-  		if(results==null||results.size()==0) return null;
   		
+  		ArrayList <FlightPlan> results = new ArrayList<FlightPlan>();
+  		
+  		
+  		
+  		
+  		
+  		
+  		if(!round_trip||return_day==null){
+  			SearchResults search = new SearchResults(_depart,_arrival,_day, req_stop);
+  			
+  			results = search.getPlans();
+  		
+  		}else{
+  			
+  			ArrayList <FlightPlan> departs = new ArrayList<FlightPlan> ();
+  			int count1 = 0;
+  			
+  			while(count1<=req_stop&&count1<=2){
+  	  			
+  				if(req_stop-count1<=2){
+  					SearchResults search1 = new SearchResults(_depart,_arrival,_day, count1);
+  					ArrayList <FlightPlan> result = search1.getPlans();
+  					if(result!=null) departs.addAll(result);
+  				}
+  				count1++;
+  			}
+  			
+
+  			ArrayList <FlightPlan> [] result = new ArrayList[3];
+  			for(int i=0; i< 3; i++){
+  				SearchResults search = new SearchResults(_arrival,_depart,return_day, i );
+  				result[i] = new ArrayList<FlightPlan>();
+  				result[i] = search.getPlans();
+  			}
+
+  			
+  			for(int i=0; i<departs.size(); i++){
+  				int re_stop = req_stop - departs.get(i).getStopOver();
+  				
+
+  				
+  				int count2=0;
+  				
+  				while(count2<result[re_stop].size()){
+  					FlightPlan temp = new FlightPlan(null);
+
+  					temp.buildReturnPlan(departs.get(i), result[re_stop].get(count2));;
+  					
+  					results.add(temp);
+  					count2++;
+  				}
+  				
+  				
+  				
+  			}
+  			
+  			if(results==null||results.size()==0) return null;
+  		}
   		try{
   			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
   			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -145,19 +213,20 @@ public class TeamHobbits extends HttpServlet {
   			e.printStackTrace();
   			mDoc = null;
   			
-  			logger.log(Level.SEVERE, "ParserConfigurationException: ", e);
   		}
   		
   		
   		Element elementFP;
   		
   		Attr attr;
-  		Text text;
+
   		
   		
   		
   		for (int i=0; i<results.size(); i++){
-  			ArrayList<Flight> flights = results.get(i).getPlan();
+  			
+  			
+
   			
   			elementFP = mDoc.createElement("FlightPlan");
   			mRootNode.appendChild(elementFP);
@@ -175,76 +244,27 @@ public class TeamHobbits extends HttpServlet {
   			elementFP.setAttributeNode(attr);
   			
   			
+  			Element elementDepart = null;
+  			Element elementReturn = null;
   			
-  			for(int j=0; j<flights.size(); j++){
-  				Element elementF = mDoc.createElement("Flight");
-  				elementFP.appendChild(elementF);
+  			if(results.get(i).isRoundTrip()){
   				
-  				attr = mDoc.createAttribute("Airplane");
-  	  			attr.setValue(flights.get(j).getAirplane().getModel()+"");
-  	  			elementF.setAttributeNode(attr);
-  	  			
-  	  			attr = mDoc.createAttribute("FlightTime");
-  	  			attr.setValue(flights.get(j).getFlightTime()+"");
-  	  			elementF.setAttributeNode(attr);
-  	  			
-  	  			attr = mDoc.createAttribute("Number");
-  	  			attr.setValue(flights.get(j).getNumber()+"");
-  	  			elementF.setAttributeNode(attr);
-  	  			
-  	  			//Departure
-  	  			Element elementD = mDoc.createElement("Departure");
-  	  			elementF.appendChild(elementD);
-  	  			
-  	  			Element Code = mDoc.createElement("Code");
-  	  			text = mDoc.createTextNode(flights.get(j).getCode(true));
-  	  			Code.appendChild(text);
-  	  			elementD.appendChild(Code);
-  	  			
-  	  			Element Time = mDoc.createElement("Time");
-  	  			text = mDoc.createTextNode(flights.get(j).getDateCode(true));
-	  			Time.appendChild(text);
-	  			elementD.appendChild(Time);
-	  			
-	  			
-	  			//Arrival
-	  			Element elementA = mDoc.createElement("Arrival");
-  	  			elementF.appendChild(elementA);
-  	  			
-  	  			Code = mDoc.createElement("Code");
-  	  			text = mDoc.createTextNode(flights.get(j).getCode(false));
-  	  			Code.appendChild(text);
-  	  			elementA.appendChild(Code);
-  	  			
-  	  			Time = mDoc.createElement("Time");
-  	  			text = mDoc.createTextNode(flights.get(j).getDateCode(false));
-	  			Time.appendChild(text);
-	  			elementA.appendChild(Time);
-	  			
-	  			
-	  			//seating
-	  			Element elementS = mDoc.createElement("Seating");
-  	  			elementF.appendChild(elementS);
-  	  			
+  				elementDepart = mDoc.createElement("Depart");
+  				elementFP.appendChild(elementDepart);
+  				
+  				appendChildren(elementDepart,buildPlan(results.get(i).getDepartPlan()));
+  				
+  				elementReturn = mDoc.createElement("Return");
+  				elementFP.appendChild(elementReturn);
   			
-  	  			
-  	  			Element First = mDoc.createElement("FirstClass");
-  	  			text = mDoc.createTextNode(flights.get(j).getSeat(true)+"");
-  	  			First.appendChild(text);
-  	  			elementS.appendChild(First);
-  	  			attr = mDoc.createAttribute("Price");
-	  			attr.setValue("$"+flights.get(j).getPrice(true));
-	  			First.setAttributeNode(attr);
-  	  			
-	  			Element Coach = mDoc.createElement("Coach");
-  	  			text = mDoc.createTextNode(flights.get(j).getSeat(false)+"");
-	  			Coach.appendChild(text);
-	  			elementS.appendChild(Coach);
-	  			attr = mDoc.createAttribute("Price");
-	  			attr.setValue("$"+flights.get(j).getPrice(false));
-	  			Coach.setAttributeNode(attr);
-	  			
+  				appendChildren(elementReturn, buildPlan(results.get(i).getReturnPlan()));
+
+  			}else{
+  				appendChildren(elementFP, buildPlan(results.get(i).getPlan()));
   			}
+  			
+  			
+  			
   			
   		}
   		
@@ -261,7 +281,6 @@ public class TeamHobbits extends HttpServlet {
   			
   		}catch(TransformerException ex){
   			ex.printStackTrace();
-  			logger.log(Level.SEVERE, "TransformerException: ", ex);
   			return null;
   		}
   		
@@ -270,6 +289,102 @@ public class TeamHobbits extends HttpServlet {
   		
   	}
 	
+	private void appendChildren(Element parent, ArrayList<Element> elements){
+		
+		for(int i=0; i<elements.size(); i++){
+			parent.appendChild(elements.get(i));
+		}
+		
+	}
+	
+	private ArrayList<Element> buildPlan(ArrayList<Flight> _plan){
+		Attr attr;
+  		Text text;
+  		
+		ArrayList<Flight> flights = _plan;
+		ArrayList<Element> elements = new ArrayList<Element> ();
+			for(int j=0; j<flights.size(); j++){
+				
+				Element elementF = mDoc.createElement("Flight");
+				
+				attr = mDoc.createAttribute("Airplane");
+	  			attr.setValue(flights.get(j).getAirplane().getModel()+"");
+	  			elementF.setAttributeNode(attr);
+	  			
+	  			attr = mDoc.createAttribute("FlightTime");
+	  			attr.setValue(flights.get(j).getFlightTime()+"");
+	  			elementF.setAttributeNode(attr);
+	  			
+	  			attr = mDoc.createAttribute("Number");
+	  			attr.setValue(flights.get(j).getNumber()+"");
+	  			elementF.setAttributeNode(attr);
+	  			
+	  			//Departure
+	  			Element elementD = mDoc.createElement("Departure");
+	  			elementF.appendChild(elementD);
+	  			
+	  			Element Code = mDoc.createElement("Code");
+	  			text = mDoc.createTextNode(flights.get(j).getCode(true));
+	  			Code.appendChild(text);
+	  			elementD.appendChild(Code);
+	  			
+	  			Element date_code = mDoc.createElement("Date");
+	  			text = mDoc.createTextNode(flights.get(j).getDateCode(true));
+  			date_code.appendChild(text);
+  			elementD.appendChild(date_code);
+  			
+  			Element local_time = mDoc.createElement("LocalTime");
+  			text = mDoc.createTextNode(flights.get(j).getLocalTimeString(true));
+  			local_time.appendChild(text);
+  			elementD.appendChild(local_time);
+  			
+  			//Arrival
+  			Element elementA = mDoc.createElement("Arrival");
+	  			elementF.appendChild(elementA);
+	  			
+	  			Code = mDoc.createElement("Code");
+	  			text = mDoc.createTextNode(flights.get(j).getCode(false));
+	  			Code.appendChild(text);
+	  			elementA.appendChild(Code);
+	  			
+	  			date_code = mDoc.createElement("Date");
+	  			text = mDoc.createTextNode(flights.get(j).getDateCode(false));
+  			date_code.appendChild(text);
+  			elementA.appendChild(date_code);
+  			
+  			local_time = mDoc.createElement("LocalTime");
+  			text = mDoc.createTextNode(flights.get(j).getLocalTimeString(false));
+  			local_time.appendChild(text);
+  			elementA.appendChild(local_time);
+  			
+  			//seating
+  			Element elementS = mDoc.createElement("Seating");
+	  			elementF.appendChild(elementS);
+	  			
+			
+	  			
+	  			Element First = mDoc.createElement("FirstClass");
+	  			text = mDoc.createTextNode(flights.get(j).getSeat(true)+"");
+	  			First.appendChild(text);
+	  			elementS.appendChild(First);
+	  			attr = mDoc.createAttribute("Price");
+  			attr.setValue("$"+flights.get(j).getPrice(true));
+  			First.setAttributeNode(attr);
+	  			
+  			Element Coach = mDoc.createElement("Coach");
+	  			text = mDoc.createTextNode(flights.get(j).getSeat(false)+"");
+  			Coach.appendChild(text);
+  			elementS.appendChild(Coach);
+  			attr = mDoc.createAttribute("Price");
+  			attr.setValue("$"+flights.get(j).getPrice(false));
+  			Coach.setAttributeNode(attr);
+  			
+  			
+  			elements.add(elementF);
+			}
+			
+		return elements;
+	}
 	
 
 	/**

@@ -18,7 +18,7 @@ public class LocalTime {
 	private int day;
 	private Date time;
 	private String time_zone;
-	
+	private String time_str;
 	LocalTime(){
 
 		time_zone = "";
@@ -60,6 +60,8 @@ public class LocalTime {
 	 */
 	public void setTime(String _time){
 		
+		time_str = _time;
+		
 		SimpleDateFormat format = new SimpleDateFormat("HH:mm");
 		
 		try {
@@ -77,6 +79,11 @@ public class LocalTime {
 	
 	public Date getTime(){
 		return time;
+	}
+	
+	public String getTimeString(){
+		
+		return time_str;
 	}
 	
 	public String getDateCode(){

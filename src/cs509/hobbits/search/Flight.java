@@ -168,6 +168,14 @@ public class Flight {
 		}
 	}
 	
+	public String getLocalTimeString(boolean depart){
+		if (depart){
+			return dep_time.getTimeString();
+		}else{
+			return arr_time.getTimeString();
+		}
+	}
+	
 	public String getDateCode(boolean depart){
 		if (depart){
 			return dep_time.getDateCode();
