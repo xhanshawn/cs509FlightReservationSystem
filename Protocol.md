@@ -4,7 +4,7 @@
 	a. AccessKey:  the key to request.
 	b. action: 
 		1. Search (search flights)
-			{
+			
 				required:
 				
 				depart: 3 capital characters, usually acronym of an airport name, eg: "BOS"
@@ -17,7 +17,7 @@
 				return_day: same format as parameter day
 				window: window time to change flights, unit is minutes, eg: "120" means 120 minutes	
 				
-			}
+			
 
 2. response:
 	a. search results: txt/xml 
