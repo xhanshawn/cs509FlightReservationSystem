@@ -34,6 +34,7 @@ import org.w3c.dom.Text;
 
 import cs509.hobbits.search.Flight;
 import cs509.hobbits.search.FlightPlan;
+import cs509.hobbits.search.GetXML;
 import cs509.hobbits.search.SearchResults;
 
 import org.apache.logging.log4j.LogManager;
@@ -52,7 +53,7 @@ public class TeamHobbits extends HttpServlet {
 	private boolean round_trip = false;
 	private String return_day = "";
 	private Document mDoc = null;
-	
+	private long window = 0l;
 	
     /**
      * @see HttpServlet#HttpServlet()
@@ -60,6 +61,8 @@ public class TeamHobbits extends HttpServlet {
     public TeamHobbits() {
         super();
         // TODO Auto-generated constructor stub
+        
+       
     }
     
     
@@ -82,10 +85,16 @@ public class TeamHobbits extends HttpServlet {
 	    String depart = request.getParameter("depart");
 	    String arrival = request.getParameter("arrival");
 	    String day = request.getParameter("day");
-	    String window = request.getParameter("window");
+	    String _window = request.getParameter("window");
 	    String stopover = request.getParameter("stop");
 	    return_day = request.getParameter("return_day");
-
+	    
+	    
+	    if(_window!=null&&_window!=""){
+	    	window = Long.parseLong(_window);
+	    }else{
+	    	window = 120l;
+	    }
 	    
 	    if(return_day!=""&&return_day!=null) {
 	    	round_trip = true;
@@ -152,7 +161,8 @@ public class TeamHobbits extends HttpServlet {
   		
   		
   		if(!round_trip||return_day==null){
-  			SearchResults search = new SearchResults(_depart,_arrival,_day, req_stop);
+  			
+  			SearchResults search = new SearchResults(_depart,_arrival,_day, req_stop, window);
   			
   			results = search.getPlans();
   		
@@ -164,17 +174,17 @@ public class TeamHobbits extends HttpServlet {
   			while(count1<=req_stop&&count1<=2){
   	  			
   				if(req_stop-count1<=2){
-  					SearchResults search1 = new SearchResults(_depart,_arrival,_day, count1);
+  					SearchResults search1 = new SearchResults(_depart,_arrival,_day, count1, window);
   					ArrayList <FlightPlan> result = search1.getPlans();
   					if(result!=null) departs.addAll(result);
   				}
   				count1++;
   			}
   			
-
+  	        
   			ArrayList <FlightPlan> [] result = new ArrayList[3];
   			for(int i=0; i< 3; i++){
-  				SearchResults search = new SearchResults(_arrival,_depart,return_day, i );
+  				SearchResults search = new SearchResults(_arrival,_depart,return_day, i, window );
   				result[i] = new ArrayList<FlightPlan>();
   				result[i] = search.getPlans();
   			}

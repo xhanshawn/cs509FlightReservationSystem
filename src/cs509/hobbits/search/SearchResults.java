@@ -8,6 +8,7 @@
 package cs509.hobbits.search;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -15,6 +16,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.logging.SimpleFormatter;
 
 import org.apache.logging.log4j.Level;
@@ -56,12 +58,14 @@ public class SearchResults {
 	private int stop_num;
 	private ArrayList <Airport> airport_list;
 	
+	private static long window = 0l;
 	
 	
-public SearchResults(String _depart, String _arrival, String _depart_date, int _stop_num){
+	public SearchResults(String _depart, String _arrival, String _depart_date, int _stop_num, long _window){
 		
-	
-	
+		
+		window = _window;
+				
 		dep_code = _depart;
 		arr_code = _arrival;
 		
@@ -72,20 +76,9 @@ public SearchResults(String _depart, String _arrival, String _depart_date, int _
 		
 		GetXML getXML = new GetXML();
 		
+		getXML.setTime(_depart_date);
 		
 		
-		// this part compute the max_date of the end of the trip. I assume the max date is the 
-		// depart date + 2 days(Date is the local day of the arrival place)
-		String[] str = _depart_date.split("_");
-		int day = Integer.parseInt(str[str.length-1]);
-		day += 1 ;
-		str[str.length-1] = String.valueOf(day);
-//		max_date="";
-		for(int i=0; i<str.length-1; i++){
-//			max_date += str[i]+"_";
-		
-		}
-//		max_date += str[str.length-1];
 		
 
 		
@@ -148,14 +141,20 @@ public SearchResults(String _depart, String _arrival, String _depart_date, int _
 
 		ArrayList<FlightPlan> plans =  new ArrayList<FlightPlan>();
 		
-		
-		LocalTime zero_time = new LocalTime();
-		zero_time.setTime("00:00");
+//		SimpleDateFormat date_format = new SimpleDateFormat("HH:mm",Locale.ENGLISH);
+//
+//		Date zero = new Date ();
+//		try {
+//			zero = (Date) date_format.parse("00:00");
+//		} catch (ParseException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
 		
 		if(stop_num==0){
 			
-			ArrayList<FlightPlan> plan0 = getDirectPlan(dep_code, arr_code, depart_date,zero_time.getTime());
+			ArrayList<FlightPlan> plan0 = getDirectPlan(dep_code, arr_code, depart_date,null);
 	
 			// this part get the direct plans and stopover plans.
 		
@@ -163,7 +162,7 @@ public SearchResults(String _depart, String _arrival, String _depart_date, int _
 		}
 		
 		
-		plans.addAll(getStopOverPlans(depart,arrival,depart_date,zero_time.getTime(), stop_num ));
+		plans.addAll(getStopOverPlans(depart,arrival,depart_date,null, stop_num ));
 
 		
 		
@@ -172,7 +171,7 @@ public SearchResults(String _depart, String _arrival, String _depart_date, int _
 		
 	}
 	
-	private ArrayList<FlightPlan> getDirectPlan(String _dep_code, String _arr_code, String _date_code, Date _time){
+	private ArrayList<FlightPlan> getDirectPlan(String _dep_code, String _arr_code, String _date_code, LocalTime _time){
 		/*
 		 * this method return all the direct plans from depart place to arrival place.
 		 * date_code string is used for getting the flight list
@@ -182,15 +181,16 @@ public SearchResults(String _depart, String _arrival, String _depart_date, int _
 		GetXML getXML = new GetXML();
 		
 		//if the time of depart is larger than 22:00, 
-		if (_time.getHours()>22&&(!_dep_code.equals(dep_code))) {
-			char[] ch = _date_code.toCharArray();
-			int day = ch[ch.length-2]*10 + ch[ch.length-1];
-			day++;     //not available for all systems or all dates
-			ch[ch.length-2] = (char) (day/10);
-			ch[ch.length-1] = (char) (day%10);
+		if(_time!=null){
+			if (_time.getTime().getHours()*60 + _time.getTime().getMinutes() > 24*60  - window) {
+				char[] ch = _date_code.toCharArray();
+				int day = ch[ch.length-2]*10 + ch[ch.length-1];
+				day++;     //not available for all systems or all dates
+				ch[ch.length-2] = (char) (day/10);
+				ch[ch.length-1] = (char) (day%10);
 			
 			_date_code = String.valueOf(ch);
-			
+			}
 		}
 		
 		ArrayList <Flight> depart_list = getXML.getFlightList(_dep_code, _date_code, DEP);
@@ -205,15 +205,22 @@ public SearchResults(String _depart, String _arrival, String _depart_date, int _
 				
 				//first judgement requirement is for to get lay over plans
 				//second is for direct flight plans.
-				if((temp.getPlan().get(0).getLocalTime(DEP).getTime() - _time.getTime() > 120*60*1000)
+				if(_time==null){
+					plan.add(temp);
+				}else{
+					if((temp.getPlan().get(0).getLocalTime(DEP).getTime().getTime()
+				
+						- _time.getTime().getTime() > window*60*1000)
 						||(_dep_code.equals(dep_code)) ){
 				
-				if(depart_list.get(i).hasSeat(first_class)){
-				plan.add(temp);}
+						if(depart_list.get(i).hasSeat(first_class)){
+						
+							plan.add(temp);
+						}
 				
 				
 				
-				
+					}
 				}
 				//this part get the standard_price which is defined as the direct flight
 				//currently this variable hasn't been used
@@ -230,7 +237,7 @@ public SearchResults(String _depart, String _arrival, String _depart_date, int _
 	
 	
 	//The main recursion algorithm to get all the plans has stopovers.
-		private ArrayList<FlightPlan> getStopOverPlans(Airport _depart, Airport _arrival, String _date_code, Date _time, int _stop ){
+		private ArrayList<FlightPlan> getStopOverPlans(Airport _depart, Airport _arrival, String _date_code, LocalTime _time, int _stop ){
 			/*
 			 * the main idea is:
 			 * 1.get the sorted airport list by latitude or longitude.
@@ -270,7 +277,7 @@ public SearchResults(String _depart, String _arrival, String _depart_date, int _
 						
 						FlightPlan first = first_part.get(j);
 
-						Date cur_time = first.getLastFlight().getLocalTime(ARR);
+						LocalTime cur_time = first.getLastFlight().getLocalTime(ARR);
 						
 						ArrayList <FlightPlan> following = new ArrayList<FlightPlan>();
 						

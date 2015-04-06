@@ -7,10 +7,19 @@
 
 package cs509.hobbits.search;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class LocalTime {
 	private int year;
@@ -19,6 +28,9 @@ public class LocalTime {
 	private Date time;
 	private String time_zone;
 	private String time_str;
+	
+	private Airport airport;
+	
 	LocalTime(){
 
 		time_zone = "";
@@ -60,28 +72,123 @@ public class LocalTime {
 	 */
 	public void setTime(String _time){
 		
-		time_str = _time;
-		
-		SimpleDateFormat format = new SimpleDateFormat("HH:mm");
-		
-		try {
-			time = format.parse(_time);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+			time_str = _time;
+			SimpleDateFormat date_format = new SimpleDateFormat("yyyy MMM dd HH:mm z",Locale.ENGLISH);
+			try {
+				Date da1 = date_format.parse(time_str);
+				time.setTime(airport.getOffset() + da1.getTime());
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 	}
 	
 	public void setTimeZone(String _time_zone){
 		time_zone = _time_zone;
 	}
 	
+	public void setAirport(Airport _port){
+		airport = _port;
+	}
+	
+	private Date convertLocalTime(String _date){
+		
+		SimpleDateFormat date_format = new SimpleDateFormat("yyyy MMM dd HH:mm z",Locale.ENGLISH);
+		
+		String location = this.airport.getLatitude() + "," + this.airport.getLongitude();
+		
+		
+		String url = "https://maps.googleapis.com/maps/api/timezone/json?location="
+		+ location +"&timestamp=";
+		try {
+			Date date = (Date) date_format.parse(_date);
+			url += "" + date.getTime()/1000;
+			URL u = new URL(url);
+			HttpURLConnection connection = (HttpURLConnection) u.openConnection();
+			
+			connection.setRequestMethod("GET");
+			
+			int responseCode = connection.getResponseCode();
+			
+		
+			
+			
+			if ((responseCode>=200) && (responseCode <=299)){
+				InputStream is = connection.getInputStream();
+				
+				BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+				StringBuilder str = new StringBuilder();
+				String line = "";
+				
+				while((line=reader.readLine())!=null){
+					
+					
+					str.append(line);
+					
+				}
+				System.out.println(str.toString());
+				JSONObject obj = new JSONObject(str.toString());
+				
+				
+				
+				
+				String timezone = obj.getString("timeZoneName");
+				
+				String[] sArray = timezone.split(" ");
+				int length = 0;
+				String acronym = ""; 
+				while(length<sArray.length){
+					acronym += sArray[length].charAt(0);
+					length++;
+				}
+				
+				this.setTimeZone(acronym);
+					
+				
+				long offset = obj.getLong("dstOffset") + obj.getLong("rawOffset");
+				
+				Date da2 = new Date ();
+				da2.setTime(date.getTime() + offset*1000);
+				
+				System.out.println(url);
+				return da2;
+				
+			}
+			
+		} catch (ParseException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			
+			return convertLocalTime(_date);
+		}
+		return null; 
+		
+		
+		
+	}
+	
 	public Date getTime(){
+		
+		
+		
+//		time = convertLocalTime(time_str);
 		return time;
 	}
 	
 	public String getTimeString(){
+		String str = time.toGMTString();
+		String strs [] =  str.split(" ");
+		strs[strs.length-1] = airport.getTimeZone();
+		
+		StringBuffer buf =  new StringBuffer();
+		for(int i=0; i<strs.length-1; i++){
+			buf.append(strs[i]+" ");
+		}
+		buf.append(strs[strs.length-1]);
+		time_str = buf.toString();
 		
 		return time_str;
 	}

@@ -8,6 +8,20 @@
 
 package cs509.hobbits.search;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 
 public class Airport {
@@ -18,6 +32,8 @@ public class Airport {
 	private String name;
 	private float latitude;
 	private float longitude;
+	private String time_zone;
+	private long offset;
 	
 	Airport(){
 		
@@ -44,6 +60,84 @@ public class Airport {
 		longitude = longi;	
 		
 	}
+	
+	public void setTimeZone(String _day){
+		_day += " 00:00 GMT";
+		SimpleDateFormat date_format = new SimpleDateFormat("yyyy_MM_dd HH:mm z",Locale.ENGLISH);
+		
+		String location = this.getLatitude() + "," + this.getLongitude();
+		
+		
+		String url = "https://maps.googleapis.com/maps/api/timezone/json?location="
+		+ location +"&timestamp=";
+		try {
+			Date date = (Date) date_format.parse(_day);
+			url += "" + date.getTime()/1000;
+			URL u = new URL(url);
+			HttpURLConnection connection = (HttpURLConnection) u.openConnection();
+			
+			connection.setRequestMethod("GET");
+			
+			int responseCode = connection.getResponseCode();
+			
+		
+			
+			
+			if ((responseCode>=200) && (responseCode <=299)){
+				InputStream is = connection.getInputStream();
+				
+				BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+				StringBuilder str = new StringBuilder();
+				String line = "";
+				
+				while((line=reader.readLine())!=null){
+					
+					
+					str.append(line);
+					
+				}
+				System.out.println(str.toString());
+				JSONObject obj = new JSONObject(str.toString());
+				
+				
+				
+				
+				String timezone = obj.getString("timeZoneName");
+				
+				String[] sArray = timezone.split(" ");
+				int length = 0;
+				String acronym = ""; 
+				while(length<sArray.length){
+					acronym += sArray[length].charAt(0);
+					length++;
+				}
+				
+				time_zone = acronym;
+					
+				
+				offset = obj.getLong("dstOffset") + obj.getLong("rawOffset");
+				
+				
+				
+				System.out.println(url);
+				
+				
+			}
+			
+		} catch (ParseException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			
+			setTimeZone(_day);
+		}
+	}
+	
+	public long getOffset(){
+		return offset;
+	}
+	
 	public String getCode(){
 		return code;
 	}
@@ -55,6 +149,9 @@ public class Airport {
 		return longitude;
 	}
 	
+	public String getTimeZone(){
+		return time_zone;
+	}
 	
 	public boolean getDirection(Airport _arrival){
 		float lat_dis = Math.abs( this.getLatitude() - _arrival.getLatitude());
@@ -65,6 +162,10 @@ public class Airport {
 			return true;
 		}
 
+	}
+	
+	public String getAirportName(){
+		return name;
 	}
 	
 	public boolean isLayover(Airport _depart, Airport _arrival){
@@ -91,5 +192,6 @@ public class Airport {
 		
 		return false;
 	}
-
+	
+	
 }

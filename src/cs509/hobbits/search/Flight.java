@@ -6,9 +6,23 @@
  */
 package cs509.hobbits.search;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Locale;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 public class Flight {
 	private Airplane model;
@@ -18,6 +32,11 @@ public class Flight {
 	private String dep_code;
 	private String arr_code;
 	
+	
+	
+	private Airport dep_port;
+	private Airport arr_port;
+	
 	private LocalTime dep_time;
 	private LocalTime arr_time;
 	
@@ -25,6 +44,8 @@ public class Flight {
 	private int fir_seat;
 	private float coa_price;
 	private int coa_seat;
+	
+	
 	
 	
 	Flight(){
@@ -60,9 +81,16 @@ public class Flight {
 		return number;
 	}
 	
-	public void setCode(String _dep_code, String _arr_code){
-		dep_code = _dep_code;
-		arr_code = _arr_code;
+	public void setAirports(Airport _dep_port,Airport _arr_port){
+		
+		dep_code = _dep_port.getCode();
+		arr_code = _arr_port.getCode();
+		
+		dep_port = _dep_port;
+		arr_port = _arr_port;
+		
+		dep_time.setAirport(dep_port);
+		arr_time.setAirport(arr_port);
 	}
 	
 	
@@ -79,15 +107,15 @@ public class Flight {
 		
 		
 		dep_time.setDate(_dep[1], Integer.parseInt(_dep[2]), Integer.parseInt(_dep[0]));
-		dep_time.setTime(_dep[3]);
+		dep_time.setTime(_dep_time);
 		
 		arr_time.setDate(_arr[1], Integer.parseInt(_arr[2]), Integer.parseInt(_arr[0]));
-		arr_time.setTime(_arr[3]);
-		
-		
-		dep_time.setTimeZone(_dep[4]);
-		dep_time.setTimeZone(_arr[4]);
+		arr_time.setTime(_arr_time);
+
+	
 	}
+	
+	
 	
 	// This method is to convert price and set
 	public void setPrice(String _fir_price, String _coa_price){
@@ -157,14 +185,14 @@ public class Flight {
 	}
 	
 	
-	public Date getLocalTime(boolean depart){
+	public LocalTime getLocalTime(boolean depart){
 		
 		
 		
 		if (depart){
-			return dep_time.getTime();
+			return dep_time;
 		}else{
-			return arr_time.getTime();
+			return arr_time;
 		}
 	}
 	
@@ -235,20 +263,5 @@ public class Flight {
 	}
 	
 	
-	public ArrayList<String> getFlightInformation(){
-	    ArrayList<String> FlightInformation=new ArrayList<String>();
-		   
-		FlightInformation.add("Number: " + number);
-		FlightInformation.add("Time: " + flight_time);
-		FlightInformation.add("Departure Airport: "+ dep_code);
-		FlightInformation.add("Arrival Airport: " + arr_code);
-		FlightInformation.add("Dep_time: " + dep_time.getTime().getHours()+":"+dep_time.getTime().getMinutes());
-		FlightInformation.add("Arr_time: " + arr_time.getTime().getHours() + ":" + arr_time.getTime().getMinutes());
-		FlightInformation.add("FirstClass: $" + fir_price);
-		FlightInformation.add("left: "+fir_seat);
-		FlightInformation.add("Coach: $" + coa_price);
-		FlightInformation.add("left: "+ coa_seat);
-		  
-		return FlightInformation;
-	}
+	
 }

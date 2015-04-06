@@ -14,9 +14,10 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
 import java.util.ArrayList;
-
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -38,10 +39,13 @@ public class GetXML {
 	final private int DEP_FLIGHT = 3;
 	final private int ARR_FLIGHT = 4;
 
+	final private boolean FIRST = true;
+	final private boolean COACH = false;
 	
 	
-	private static ArrayList<Airplane> airplane_list = null;
-	
+	private static ArrayList<Airplane> Airplane_list = null;
+	private static Map<String, Airport> Airport_list = new HashMap<String, Airport>();
+
 	private final String mUrlBase = 
 			"http://cs509.cs.wpi.edu:8181/CS509.server/ReservationSystem?team=Team08";
 	
@@ -49,15 +53,40 @@ public class GetXML {
 	
 	private String query_date = "";
 	
+	private static String day ="";
 	
 	
 	public GetXML(){
 		
-		if(airplane_list==null)
-		airplane_list = this.getAirplaneList();
+		
+		
+		if(Airplane_list==null)	 Airplane_list = this.getAirplaneList();
+		
+		
 	}
 	
-	
+	public void setTime(String _day){
+		
+//		String format_day = "";
+//		String[] str = _day.split("_");
+//		_day = ""
+		
+		if(day!=_day){
+			day = _day;
+		}
+		
+		ArrayList <Airport> airports = new ArrayList<Airport>();
+		if(Airport_list.size()==0){
+			airports = this.getAirportList();
+			System.out.println(airports.size()+"");
+			for(int i=0; i< airports.size(); i++){
+				Airport_list.put(airports.get(i).getCode(), airports.get(i));
+				airports.get(i).setTimeZone(day);
+			}
+			System.out.println("initial");
+		}
+		
+	}
 	/*
 	 * This method is used to retrieve the data stream from server
 	 */
@@ -311,13 +340,16 @@ public class GetXML {
 			
 			Flight flight = new Flight();
 		
-			flight.setPlane(airplane, this.airplane_list);
+			
+			flight.setPlane(airplane, this.Airplane_list);
+			flight.setSeats(first_class_seat,  coach_seat);
 			flight.setNumber(Number);
-			flight.setCode(dep_code, arr_code);
+			flight.setAirports(Airport_list.get(dep_code), Airport_list.get(arr_code));
 			flight.setFlightTime(Time);
 			flight.setLocalTime(dep_time, arr_time);
 			flight.setPrice(first_class, coach);
-			flight.setSeats(first_class_seat,  coach_seat);
+			
+			if(!flight.hasSeat(FIRST)&&!flight.hasSeat(COACH)) continue;
 		
 			flight_list.add(flight);
 		
