@@ -1,0 +1,134 @@
+# Request Protocol:
+
+1. paramters:
+	a. AccessKey:  the key to request.
+	b. action: 
+		1. Search (search flights)
+			{
+				required:
+				
+				depart: 3 capital characters, usually acronym of an airport name, eg: "BOS"
+				arrival: 3 capital characters, usually acronym of an airport name, eg: "BOS"
+				day: query flights date, Format: "yyyy_mm_dd" y=year, m=month, d=day, all are integers, eg: 2015_05_10. 
+				stop: # of stop overs, (integer between 0 and 4)
+				
+				optional:
+				
+				return_day: same format as parameter day
+				window: window time to change flights, unit is minutes, eg: "120" means 120 minutes	
+				
+			}
+
+2. response:
+	a. search results: txt/xml 
+		eg:
+		<FlightPlans>
+		<FlightPlan Coach="536.94104" FirstClass="2217.1213" Stopover="4">
+		<Depart>
+		<Flight Airplane="A320" FlightTime="94" Number="1787">
+		<Departure>
+		<Code>BOS</Code>
+		<Date>2015_05_10</Date>
+		<LocalTime>10 May 2015 02:32:45 EDT</LocalTime>
+		</Departure>
+		<Arrival>
+		<Code>CLT</Code>
+		<Date>2015_05_10</Date>
+		<LocalTime>10 May 2015 04:06:45 EDT</LocalTime>
+		</Arrival>
+		<Seating>
+		<FirstClass Price="$593.4">3</FirstClass>
+		<Coach Price="$57.433">95</Coach>
+		</Seating>
+		</Flight>
+		<Flight Airplane="717" FlightTime="345" Number="2244">
+		<Departure>
+		<Code>CLT</Code>
+		<Date>2015_05_10</Date>
+		<LocalTime>10 May 2015 23:48:45 EDT</LocalTime>
+		</Departure>
+		<Arrival>
+		<Code>ONT</Code>
+		<Date>2015_05_11</Date>
+		<LocalTime>11 May 2015 05:33:34 PDT</LocalTime>
+		</Arrival>
+		<Seating>
+		<FirstClass Price="$1087.4242">7</FirstClass>
+		<Coach Price="$318.277">78</Coach>
+		</Seating>
+		</Flight>
+		<Flight Airplane="A380" FlightTime="9" Number="13641">
+		<Departure>
+		<Code>ONT</Code>
+		<Date>2015_05_11</Date>
+		<LocalTime>11 May 2015 13:05:34 PDT</LocalTime>
+		</Departure>
+		<Arrival>
+		<Code>LAX</Code>
+		<Date>2015_05_11</Date>
+		<LocalTime>11 May 2015 13:14:34 PDT</LocalTime>
+		</Arrival>
+		<Seating>
+		<FirstClass Price="$5.211">95</FirstClass>
+		<Coach Price="$1.566">203</Coach>
+		</Seating>
+		</Flight>
+		</Depart>
+		<Return>
+		<Flight Airplane="767" FlightTime="246" Number="9687">
+		<Departure>
+		<Code>LAX</Code>
+		<Date>2015_05_14</Date>
+		<LocalTime>14 May 2015 01:22:34 PDT</LocalTime>
+		</Departure>
+		<Arrival>
+		<Code>BNA</Code>
+		<Date>2015_05_14</Date>
+		<LocalTime>14 May 2015 05:28:42 CDT</LocalTime>
+		</Arrival>
+		<Seating>
+		<FirstClass Price="$178.899">100</FirstClass>
+		<Coach Price="$93.022">167</Coach>
+		</Seating>
+		</Flight>
+		<Flight Airplane="757" FlightTime="133" Number="11342">
+		<Departure>
+		<Code>BNA</Code>
+		<Date>2015_05_14</Date>
+		<LocalTime>14 May 2015 10:04:42 CDT</LocalTime>
+		</Departure>
+		<Arrival>
+		<Code>PHL</Code>
+		<Date>2015_05_14</Date>
+		<LocalTime>14 May 2015 12:17:45 EDT</LocalTime>
+		</Arrival>
+		<Seating>
+		<FirstClass Price="$314.888">10</FirstClass>
+		<Coach Price="$59.277">60</Coach>
+		</Seating>
+		</Flight>
+		<Flight Airplane="777" FlightTime="39" Number="14583">
+		<Departure>
+		<Code>PHL</Code>
+		<Date>2015_05_14</Date>
+		<LocalTime>14 May 2015 15:29:45 EDT</LocalTime>
+		</Departure>
+		<Arrival>
+		<Code>BOS</Code>
+		<Date>2015_05_14</Date>
+		<LocalTime>14 May 2015 16:08:45 EDT</LocalTime>
+		</Arrival>
+		<Seating>
+		<FirstClass Price="$37.299">22</FirstClass>
+		<Coach Price="$7.366">127</Coach>
+		</Seating>
+		</Flight>
+		</Return>
+		</FlightPlan>
+		</FlightPlans>
+		
+	2. No flights warning: txt/plain, if no flights response "no flight!"
+		
+					
+		
+	
