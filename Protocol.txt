@@ -129,6 +129,9 @@
 		
 	2. No flights warning: txt/plain, if no flights response "no flight!"
 		
-					
+			
+			
+			
+example url: HobbitsFlight?AccessKey=TeamHobbits&&action=Search&&depart=BOS&&arrival=LAX&&day=2015_05_10&&stop=4&&return_day=2015_05_14&&window=120		
 		
 	
