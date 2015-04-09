@@ -4,21 +4,24 @@
 	a. AccessKey:  the key to request.
 	b. action: 
 		1. Search (search flights)
+			required:
 			
-				required:
-				
-				depart: 3 capital characters, usually acronym of an airport name, eg: "BOS"
-				arrival: 3 capital characters, usually acronym of an airport name, eg: "BOS"
-				day: query flights date, Format: "yyyy_mm_dd" y=year, m=month, d=day, all are integers, eg: 2015_05_10. 
-				stop: # of stop overs, (integer between 0 and 4)
-				
-				optional:
-				
-				return_day: same format as parameter day
-				window: window time to change flights, unit is minutes, eg: "120" means 120 minutes	
-				
+				1. depart: 3 capital characters, usually acronym of an airport name, eg: "BOS"
+				2. arrival: 3 capital characters, usually acronym of an airport name, eg: "BOS"
+				3. day: query flights date, Format: "yyyy_mm_dd" y=year, m=month, d=day, all are integers, eg: 2015_05_10. 
+				4. stop: # of stop overs, (integer between 0 and 4)
 			
-
+			optional:
+			
+				1. return_day: same format as parameter day
+				2. window: window time to change flights, unit is minutes, eg: "120" means 120 minutes
+		2. List (List Airports and Airplanes)
+			
+			required:
+				list_type: 
+					1. airports: return airport lists
+					2. airplanes: return airplane lists
+					
 2. response:
 	a. search results: txt/xml 
 		eg:

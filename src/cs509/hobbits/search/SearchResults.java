@@ -27,11 +27,6 @@ import org.apache.logging.log4j.LogManager;
 
 
 
-
-
-
-
-
 public class SearchResults {
 	
 	final private long Version = 2L;
@@ -74,9 +69,9 @@ public class SearchResults {
 		
 		stop_num = _stop_num;
 		
-		GetXML getXML = new GetXML();
+		DataRetriever dr = new DataRetriever();
 		
-		getXML.setTime(_depart_date);
+		dr.setTime(_depart_date);
 		
 		
 		
@@ -84,7 +79,7 @@ public class SearchResults {
 		
 		
 		//this part sort the airports 
-		airport_list = getXML.getAirportList();
+		airport_list = dr.getAirportList();
 		
 		Collections.sort( airport_list , new Comparator<Airport>(){
 
@@ -141,15 +136,7 @@ public class SearchResults {
 
 		ArrayList<FlightPlan> plans =  new ArrayList<FlightPlan>();
 		
-//		SimpleDateFormat date_format = new SimpleDateFormat("HH:mm",Locale.ENGLISH);
-//
-//		Date zero = new Date ();
-//		try {
-//			zero = (Date) date_format.parse("00:00");
-//		} catch (ParseException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+
 		
 		
 		if(stop_num==0){
@@ -178,7 +165,7 @@ public class SearchResults {
 		 * _time is to filter all plans which doesn't has enough time for changing the flight
 		 * I assuming 2 hours for layover.
 		 */
-		GetXML getXML = new GetXML();
+		DataRetriever retrieve = new DataRetriever();
 		
 		//if the time of depart is larger than 22:00, 
 		if(_time!=null){
@@ -193,7 +180,7 @@ public class SearchResults {
 			}
 		}
 		
-		ArrayList <Flight> depart_list = getXML.getFlightList(_dep_code, _date_code, DEP);
+		ArrayList <Flight> depart_list = retrieve.getFlightList(_dep_code, _date_code, DEP);
 		
 		
 		ArrayList <FlightPlan> plan = new ArrayList <FlightPlan>();

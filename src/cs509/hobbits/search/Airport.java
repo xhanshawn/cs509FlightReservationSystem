@@ -25,7 +25,7 @@ import org.json.JSONObject;
 
 
 public class Airport {
-	final private float PERCENTAGE = 0.1f; 
+	final private float PERCENTAGE = 0.33f; 
 	
 	
 	private String code;
@@ -35,7 +35,7 @@ public class Airport {
 	private String time_zone;
 	private long offset;
 	
-	Airport(){
+	public Airport(){
 		
 		code = "";
 		name = "";
@@ -47,7 +47,7 @@ public class Airport {
 	/*
 	 * Setters and getters 
 	 */
-	public void setCode(String _code, String _name){
+	public void setCodeAndName(String _code, String _name){
 		
 		code = _code;
 		name = _name;
@@ -67,6 +67,7 @@ public class Airport {
 		
 		String location = this.getLatitude() + "," + this.getLongitude();
 		
+		JSONObject obj = null;
 		
 		String url = "https://maps.googleapis.com/maps/api/timezone/json?location="
 		+ location +"&timestamp=";
@@ -96,11 +97,19 @@ public class Airport {
 					str.append(line);
 					
 				}
-				System.out.println(str.toString());
-				JSONObject obj = new JSONObject(str.toString());
 				
+				obj = new JSONObject(str.toString());
 				
+
 				
+				if(obj.has("errorMessage")||!obj.getString("status").equals("OK"))
+					{
+						try{Thread.sleep(2000);
+						}
+						catch(Exception ex){}
+					
+						setTimeZone(_day);
+					}
 				
 				String timezone = obj.getString("timeZoneName");
 				
@@ -119,7 +128,6 @@ public class Airport {
 				
 				
 				
-				System.out.println(url);
 				
 				
 			}
@@ -129,8 +137,14 @@ public class Airport {
 			e.printStackTrace();
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
+			e.printStackTrace();
+			try {
+				System.out.println(obj.getString("status"));
+			} catch (JSONException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			
-			setTimeZone(_day);
 		}
 	}
 	
@@ -156,7 +170,7 @@ public class Airport {
 	public boolean getDirection(Airport _arrival){
 		float lat_dis = Math.abs( this.getLatitude() - _arrival.getLatitude());
 		float longi_dis = Math.abs( this.getLongitude() - _arrival.getLongitude());
-		if(lat_dis>=longi_dis){
+		if(lat_dis>longi_dis){
 			return false;	
 		}else{
 			return true;

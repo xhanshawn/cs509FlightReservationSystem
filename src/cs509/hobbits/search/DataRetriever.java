@@ -17,6 +17,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -29,68 +30,96 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-public class GetXML {
+public class DataRetriever {
 	
-	final private String DEPART = "departing";
-	final private String ARRIVAL = "arriving";
+	final private static String DEPART = "departing";
+	final private static String ARRIVAL = "arriving";
 	
-	final private int AIRPORTS = 1;
-	final private int AIRPLANES = 2;
-	final private int DEP_FLIGHT = 3;
-	final private int ARR_FLIGHT = 4;
+	final private static int AIRPORTS = 1;
+	final private static int AIRPLANES = 2;
+	final private static int DEP_FLIGHT = 3;
+	final private static int ARR_FLIGHT = 4;
 
 	final private boolean FIRST = true;
 	final private boolean COACH = false;
 	
 	
-	private static ArrayList<Airplane> Airplane_list = null;
+	private static Map<String, Airplane> Airplane_list = new HashMap<String, Airplane>();
 	private static Map<String, Airport> Airport_list = new HashMap<String, Airport>();
 
-	private final String mUrlBase = 
+	private final static String mUrlBase = 
 			"http://cs509.cs.wpi.edu:8181/CS509.server/ReservationSystem?team=Team08";
 	
-	private String query_airport = "";
+	private static String query_airport = "";
 	
-	private String query_date = "";
+	private static String query_date = "";
 	
 	private static String day ="";
 	
 	
-	public GetXML(){
+	public DataRetriever(){
 		
+		updateAirplaneList();
+		updateAirportList();
 		
+	}
+	
+	private static void updateAirplaneList(){
 		
-		if(Airplane_list==null)	 Airplane_list = this.getAirplaneList();
+		if(Airplane_list.isEmpty())	 {
+			ArrayList<Airplane> airplanes = new ArrayList<Airplane>();
+			
+			airplanes = getAirplaneList();
+			
+			for(int i=0; i< airplanes.size(); i++){
+				Airplane_list.put(airplanes.get(i).getModel(), airplanes.get(i));
+				
+			}
+		}
 		
+	}
+	
+	private static void updateAirportList(){
+		if(Airport_list.isEmpty()){
+			ArrayList <Airport> airports = new ArrayList<Airport>();
+			
+
+			
+			airports = getAirportList();
+			
+			for(int i=0; i< airports.size(); i++){
+				Airport_list.put(airports.get(i).getCode(), airports.get(i));
+
+			}
 		
+		}
+	}
+	
+	public static void updateLists(){
+		Airport_list.clear();
+		Airplane_list.clear();
+		updateAirplaneList();
+		updateAirportList();
 	}
 	
 	public void setTime(String _day){
 		
-//		String format_day = "";
-//		String[] str = _day.split("_");
-//		_day = ""
+
 		
-		if(day!=_day){
+		if(!day.equals(_day)){
 			day = _day;
-		}
 		
-		ArrayList <Airport> airports = new ArrayList<Airport>();
-		if(Airport_list.size()==0){
-			airports = this.getAirportList();
-			System.out.println(airports.size()+"");
-			for(int i=0; i< airports.size(); i++){
-				Airport_list.put(airports.get(i).getCode(), airports.get(i));
-				airports.get(i).setTimeZone(day);
+			for(Map.Entry<String, Airport> entry : Airport_list.entrySet()){
+				entry.getValue().setTimeZone(day);
+		
 			}
-			System.out.println("initial");
 		}
 		
 	}
 	/*
 	 * This method is used to retrieve the data stream from server
 	 */
-	private InputStream getStream ( int list_type){
+	private static InputStream getStream ( int list_type){
 		
 		URL url = null;
 		HttpURLConnection connection;
@@ -145,7 +174,7 @@ public class GetXML {
 	/*
 	 * This method is to get airport list from the server 
 	 */
-	public ArrayList<Airport> getAirportList() {
+	public static ArrayList<Airport> getAirportList() {
 		
 		InputStream input = getStream(AIRPORTS);
 		
@@ -186,7 +215,7 @@ public class GetXML {
 			
 			String Code = ((Element)list.item(i)).getAttribute("Code");
 			String Name = ((Element)list.item(i)).getAttribute("Name");
-			airport.setCode(Code, Name);
+			airport.setCodeAndName(Code, Name);
 			
 			float latitude = Float.parseFloat(list.item(i).getFirstChild().getTextContent());
 			float longitude = Float.parseFloat(list.item(i).getLastChild().getTextContent());
@@ -205,7 +234,7 @@ public class GetXML {
 	 * This method is to get Airplane list from the server
 	 */
 	
-	public ArrayList<Airplane> getAirplaneList(){
+	public static ArrayList<Airplane> getAirplaneList(){
 	
 		InputStream input = getStream(AIRPLANES);
 	
@@ -341,7 +370,7 @@ public class GetXML {
 			Flight flight = new Flight();
 		
 			
-			flight.setPlane(airplane, this.Airplane_list);
+			flight.setPlane(this.Airplane_list.get(airplane));
 			flight.setSeats(first_class_seat,  coach_seat);
 			flight.setNumber(Number);
 			flight.setAirports(Airport_list.get(dep_code), Airport_list.get(arr_code));
@@ -382,4 +411,5 @@ public class GetXML {
 	
 	
 	
+
 

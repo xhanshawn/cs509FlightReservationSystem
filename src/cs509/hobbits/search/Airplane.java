@@ -13,7 +13,7 @@ public class Airplane {
 	private int first_class_seats;
 	private int coach_seats;
 	
-	Airplane(){
+	public Airplane(){
 		
 		manufacturer = "";
 		model = "";

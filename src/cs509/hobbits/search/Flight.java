@@ -59,17 +59,9 @@ public class Flight {
 		coa_price = 0.0f;
 	}
 	
-	public void setPlane(String _airplane, ArrayList<Airplane> airplane_list){
-		
-		
-		for(int i=0; i<airplane_list.size(); i++){
-			if (airplane_list.get(i).getModel().equals(_airplane)) {
-				 
-				model = airplane_list.get(i);
-
-			}
-		}
-		
+	public void setPlane(Airplane airplane){
+		 
+				model = airplane;
 
 	}
 	
@@ -100,19 +92,11 @@ public class Flight {
 	
 	// This method is to convert string to time
 	public void setLocalTime(String _dep_time, String _arr_time){
-		//Time Format 2015(0) May(1) 10(2) 01:49(3) EDT(4)
-		String[] _dep = _dep_time.split(" ");
-		String[] _arr = _arr_time.split(" ");
 		
-		
-		
-		dep_time.setDate(_dep[1], Integer.parseInt(_dep[2]), Integer.parseInt(_dep[0]));
 		dep_time.setTime(_dep_time);
 		
-		arr_time.setDate(_arr[1], Integer.parseInt(_arr[2]), Integer.parseInt(_arr[0]));
 		arr_time.setTime(_arr_time);
 
-	
 	}
 	
 	
@@ -220,10 +204,10 @@ public class Flight {
 		}else{
 			code = arr_code;
 		}
-		GetXML getXML = new GetXML();
+		DataRetriever r = new DataRetriever();
 		ArrayList<Airport> list = new ArrayList<Airport>();
 
-			list = getXML.getAirportList();
+			list = r.getAirportList();
 		
 			
 		Iterator<Airport> ite = list.iterator();
