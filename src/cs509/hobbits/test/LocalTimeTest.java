@@ -27,7 +27,7 @@ public class LocalTimeTest {
 		lc.setTime("2015 May 10 05:04 GMT");
 		
 		assertEquals("2015_05_10",lc.getDateCode());
-
+		
 	}
 
 	@Test

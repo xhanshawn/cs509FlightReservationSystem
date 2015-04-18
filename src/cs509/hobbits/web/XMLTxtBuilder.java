@@ -1,5 +1,12 @@
 package cs509.hobbits.web;
 
+/**
+ * This class is used to build xml
+ * 
+ * @author Xu Han 
+ * 
+ */
+
 import java.io.StringWriter;
 import java.util.ArrayList;
 
@@ -41,21 +48,19 @@ public class XMLTxtBuilder {
   			mDoc.setXmlStandalone(false);
   			mRootNode = mDoc.createElement("FlightPlans");
   			mDoc.appendChild(mRootNode);
+  			
   		}catch(ParserConfigurationException e){
+  			
   			e.printStackTrace();
   			mDoc = null;
   			
   		}
-  		
   		
   		Element elementFP;
   		
   		Attr attr;
 
   		for (int i=0; i<results.size(); i++){
-  			
-  			
-
   			
   			elementFP = mDoc.createElement("FlightPlan");
   			mRootNode.appendChild(elementFP);
@@ -91,20 +96,18 @@ public class XMLTxtBuilder {
   			}else{
   				appendChildren(elementFP, buildPlan(results.get(i).getPlan()));
   			}
-  			
-  			
-  			
-  			
+
   		}
   		
   		try{
+  			
   			DOMSource domSource = new DOMSource(mDoc);
   			StringWriter writer = new StringWriter();
   			StreamResult result = new StreamResult(writer);
+  			
   			TransformerFactory tf = TransformerFactory.newInstance();
   			Transformer transformer = tf.newTransformer();
   			transformer.transform(domSource, result);
-
   			
   			return writer.toString();
   			
@@ -113,14 +116,7 @@ public class XMLTxtBuilder {
   			return null;
   		}
   		
-		
-		
-		
-		
-		
-		
 	}
-	
 	
 	private static void appendChildren(Element parent, ArrayList<Element> elements){
 		
@@ -132,99 +128,91 @@ public class XMLTxtBuilder {
 	
 	
 	private static ArrayList<Element> buildPlan(ArrayList<Flight> _plan){
+		
 		Attr attr;
   		Text text;
   		
 		ArrayList<Flight> flights = _plan;
 		ArrayList<Element> elements = new ArrayList<Element> ();
-			for(int j=0; j<flights.size(); j++){
-				
-				Element elementF = mDoc.createElement("Flight");
-				
-				attr = mDoc.createAttribute("Airplane");
-	  			attr.setValue(flights.get(j).getAirplane().getModel()+"");
-	  			elementF.setAttributeNode(attr);
+		
+		for(int j=0; j<flights.size(); j++){
+			
+			Element elementF = mDoc.createElement("Flight");
+			
+			attr = mDoc.createAttribute("Airplane");
+			attr.setValue(flights.get(j).getAirplane().getModel()+"");
+			elementF.setAttributeNode(attr);
 	  			
-	  			attr = mDoc.createAttribute("FlightTime");
-	  			attr.setValue(flights.get(j).getFlightTime()+"");
-	  			elementF.setAttributeNode(attr);
+			attr = mDoc.createAttribute("FlightTime");
+			attr.setValue(flights.get(j).getFlightTime()+"");
+			elementF.setAttributeNode(attr);
+			
+			attr = mDoc.createAttribute("Number");
+			attr.setValue(flights.get(j).getNumber()+"");
+			elementF.setAttributeNode(attr);
 	  			
-	  			attr = mDoc.createAttribute("Number");
-	  			attr.setValue(flights.get(j).getNumber()+"");
-	  			elementF.setAttributeNode(attr);
+			//Departure
+			Element elementD = mDoc.createElement("Departure");
+			elementF.appendChild(elementD);
+			
+			Element Code = mDoc.createElement("Code");
+	  		text = mDoc.createTextNode(flights.get(j).getCode(true));
+	  		Code.appendChild(text);
+	  		elementD.appendChild(Code);
 	  			
-	  			//Departure
-	  			Element elementD = mDoc.createElement("Departure");
-	  			elementF.appendChild(elementD);
-	  			
-	  			Element Code = mDoc.createElement("Code");
-	  			text = mDoc.createTextNode(flights.get(j).getCode(true));
-	  			Code.appendChild(text);
-	  			elementD.appendChild(Code);
-	  			
-	  			Element date_code = mDoc.createElement("Date");
-	  			text = mDoc.createTextNode(flights.get(j).getDateCode(true));
-  			date_code.appendChild(text);
-  			elementD.appendChild(date_code);
+	  		Element local_time = mDoc.createElement("LocalTime");
+	  		text = mDoc.createTextNode(flights.get(j).getDAOffsetString(true));
+	  		local_time.appendChild(text);
+	  		elementD.appendChild(local_time);
   			
-  			Element local_time = mDoc.createElement("LocalTime");
-  			text = mDoc.createTextNode(flights.get(j).getLocalTimeString(true));
-  			local_time.appendChild(text);
-  			elementD.appendChild(local_time);
-  			
-  			//Arrival
-  			Element elementA = mDoc.createElement("Arrival");
+	  		//Arrival
+	  		Element elementA = mDoc.createElement("Arrival");
 	  		elementF.appendChild(elementA);
-	  			
+	  		
 	  		Code = mDoc.createElement("Code");
 	  		text = mDoc.createTextNode(flights.get(j).getCode(false));
 	  		Code.appendChild(text);
-	  		elementA.appendChild(Code);
-	  			
-	  		date_code = mDoc.createElement("Date");
-	  		text = mDoc.createTextNode(flights.get(j).getDateCode(false));
-  			date_code.appendChild(text);
-  			elementA.appendChild(date_code);
+	  		elementA.appendChild(Code);	
   			
-  			local_time = mDoc.createElement("LocalTime");
-  			text = mDoc.createTextNode(flights.get(j).getLocalTimeString(false));
-  			local_time.appendChild(text);
-  			elementA.appendChild(local_time);
-  			
-  			//seating
-  			Element elementS = mDoc.createElement("Seating");
+	  		local_time = mDoc.createElement("LocalTime");
+	  		text = mDoc.createTextNode(flights.get(j).getDAOffsetString(false));
+	  		local_time.appendChild(text);
+	  		elementA.appendChild(local_time);
+	  		
+	  		//seating
+	  		Element elementS = mDoc.createElement("Seating");
 	  		elementF.appendChild(elementS);
-	  			
-			
+	  		
+	  		
 	  		Element First = mDoc.createElement("FirstClass");
 	  		text = mDoc.createTextNode(flights.get(j).getSeat(true)+"");
 	  		First.appendChild(text);
 	  		elementS.appendChild(First);
 	  		attr = mDoc.createAttribute("Price");
-  			attr.setValue("$"+flights.get(j).getPrice(true));
-  			First.setAttributeNode(attr);
-	  			
-  			Element Coach = mDoc.createElement("Coach");
-  			text = mDoc.createTextNode(flights.get(j).getSeat(false)+"");
-  			Coach.appendChild(text);
-  			elementS.appendChild(Coach);
-  			attr = mDoc.createAttribute("Price");
-  			attr.setValue("$"+flights.get(j).getPrice(false));
-  			Coach.setAttributeNode(attr);
+	  		attr.setValue("$"+flights.get(j).getPrice(true));
+	  		First.setAttributeNode(attr);
+	  		
+	  		Element Coach = mDoc.createElement("Coach");
+	  		text = mDoc.createTextNode(flights.get(j).getSeat(false)+"");
+	  		Coach.appendChild(text);
+	  		elementS.appendChild(Coach);
+	  		attr = mDoc.createAttribute("Price");
+	  		attr.setValue("$"+flights.get(j).getPrice(false));
+	  		Coach.setAttributeNode(attr);
   			
   			
-  			elements.add(elementF);
-			}
+	  		elements.add(elementF);
+		}
 			
 		return elements;
 	}
-	
 	
 	public static String buildAirportsXML(ArrayList<Airport> airports){
 		
 		Element mRootNode = null;
 		
 		try{
+			
   			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
   			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
   			
@@ -233,19 +221,19 @@ public class XMLTxtBuilder {
   			mDoc.setXmlStandalone(false);
   			mRootNode = mDoc.createElement("Airports");
   			mDoc.appendChild(mRootNode);
+  			
   		}catch(ParserConfigurationException e){
+  			
   			e.printStackTrace();
   			mDoc = null;
   			
   		}
-  		
   		
   		Element elementA;
   		
   		Attr attr;
 
   		for (int i=0; i<airports.size(); i++){
-  			
   			
   			elementA = mDoc.createElement("Airport");
   			mRootNode.appendChild(elementA);
@@ -257,7 +245,6 @@ public class XMLTxtBuilder {
   			attr = mDoc.createAttribute("Name");
   			attr.setValue(airports.get(i).getAirportName());
   			elementA.setAttributeNode(attr);
-  			
   				
   			Element elementLat = mDoc.createElement("Latitude");
   			Text text = mDoc.createTextNode(airports.get(i).getLatitude()+"");;
@@ -271,6 +258,7 @@ public class XMLTxtBuilder {
   		
   		}
   		try{
+  			
   			DOMSource domSource = new DOMSource(mDoc);
   			StringWriter writer = new StringWriter();
   			StreamResult result = new StreamResult(writer);
@@ -292,6 +280,7 @@ public class XMLTxtBuilder {
 		Element mRootNode = null;
 		
 		try{
+			
   			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
   			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
   			
@@ -300,19 +289,19 @@ public class XMLTxtBuilder {
   			mDoc.setXmlStandalone(false);
   			mRootNode = mDoc.createElement("Airplanes");
   			mDoc.appendChild(mRootNode);
+  			
   		}catch(ParserConfigurationException e){
+  			
   			e.printStackTrace();
   			mDoc = null;
   			
   		}
-  		
   		
   		Element elementA;
   		
   		Attr attr;
 
   		for (int i=0; i<airplanes.size(); i++){
-  			
   			
   			elementA = mDoc.createElement("Airplane");
   			mRootNode.appendChild(elementA);
@@ -324,7 +313,6 @@ public class XMLTxtBuilder {
   			attr = mDoc.createAttribute("Model");
   			attr.setValue(airplanes.get(i).getModel());
   			elementA.setAttributeNode(attr);
-  			
   				
   			Element elementF = mDoc.createElement("FirstClassSeats");
   			Text text = mDoc.createTextNode(airplanes.get(i).getSeatNumber(true)+"");;
@@ -338,6 +326,7 @@ public class XMLTxtBuilder {
   		
   		}
   		try{
+  			
   			DOMSource domSource = new DOMSource(mDoc);
   			StringWriter writer = new StringWriter();
   			StreamResult result = new StreamResult(writer);

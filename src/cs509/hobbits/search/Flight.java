@@ -1,18 +1,12 @@
+package cs509.hobbits.search;
+
 /**
  * This is the class to generalize Flights
  * 
  * @author Xu Han 
  * 
  */
-package cs509.hobbits.search;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -20,19 +14,19 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Locale;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 
 
 public class Flight {
+	
 	private Airplane model;
+	
 	private int flight_time;
 	private int number;
 	
 	private String dep_code;
 	private String arr_code;
-	
-	
+	private String dep_time_str;
+	private String arr_time_str;
 	
 	private Airport dep_port;
 	private Airport arr_port;
@@ -40,37 +34,42 @@ public class Flight {
 	private LocalTime dep_time;
 	private LocalTime arr_time;
 	
-	private float fir_price;
+	private String fir_price;
 	private int fir_seat;
-	private float coa_price;
+	private String coa_price;
 	private int coa_seat;
-	
-	
 	
 	
 	Flight(){
 		
 		model = new Airplane();
 		dep_code = "";
-		dep_time = new LocalTime();
+		dep_time = null;
 		arr_code = "";
-		arr_time = new LocalTime();
-		fir_price = 0.0f;
-		coa_price = 0.0f;
+		arr_time = null;
+		fir_price = "";
+		coa_price = "";
+		
+		dep_time_str = null;
+		arr_time_str = null;
 	}
 	
 	public void setPlane(Airplane airplane){
 		 
-				model = airplane;
+		model = airplane;
 
 	}
 	
 	
 	public void setNumber(int num){
+		
 		number = num;
+		
 	}
 	public int getNumber(){
+		
 		return number;
+		
 	}
 	
 	public void setAirports(Airport _dep_port,Airport _arr_port){
@@ -81,66 +80,41 @@ public class Flight {
 		dep_port = _dep_port;
 		arr_port = _arr_port;
 		
-		dep_time.setAirport(dep_port);
-		arr_time.setAirport(arr_port);
 	}
 	
 	
 	public void setFlightTime(int _flight_time){
+		
 		flight_time = _flight_time;
+		
 	}
 	
 	// This method is to convert string to time
-	public void setLocalTime(String _dep_time, String _arr_time){
+	public void setDATime(String _dep_time, String _arr_time){
 		
-		dep_time.setTime(_dep_time);
+		if(dep_time_str==null) dep_time_str = _dep_time;
+		if(arr_time_str==null) arr_time_str = _arr_time;
 		
-		arr_time.setTime(_arr_time);
-
 	}
 	
 	
 	
 	// This method is to convert price and set
 	public void setPrice(String _fir_price, String _coa_price){
-		char[] fir = new char[_fir_price.length()+1];
-		char[] coa = new char[_coa_price.length()+1];
 		
-		fir = _fir_price.toCharArray();
-		coa = _coa_price.toCharArray();
-		
-		int thousand=0;
-		for (int m=0; m<_fir_price.length()-1; m++){
+		if(fir_price==""||coa_price=="") {
 			
-			if(m+1+thousand<_fir_price.length()){
-			if(fir[m+1]==','){
-				thousand++;
-			}
-			
-				fir[m] = fir[m+1+thousand];
-			}
-		}
-		thousand=0;
-		for (int n=0; n<_coa_price.length(); n++){
-			
-			if(n+thousand+1<_coa_price.length()){
-			if(coa[n+1]==','){
-				thousand++;
-			}
-			
-			coa[n] = coa[n+1+thousand];
-			}
+			fir_price = _fir_price;
+			coa_price = _coa_price;
+
 		}
 		
-		fir_price = Float.parseFloat(String.valueOf(fir));
-		coa_price = Float.parseFloat(String.valueOf(coa));
 	}
 	
 	public void setSeats(int _first, int _coach){
 		
 		fir_seat = model.getSeatNumber(true) - _first;
 		coa_seat = model.getSeatNumber(false) - _coach;
-		
 
 		if (fir_seat<0||coa_seat<0){
 			throw new IllegalArgumentException("Error: Seat number on the server is not correct");
@@ -149,6 +123,7 @@ public class Flight {
 	}
 	
 	public String getCode(boolean dep){
+		
 		if (dep){
 			return dep_code;
 		}else{
@@ -158,46 +133,82 @@ public class Flight {
 	}
 	
 	public int getFlightTime(){
+		
 		return flight_time;
+		
 	}
 	
 	public float getPrice(boolean first_class){
-		if (first_class==true){
-			return fir_price;
+		
+		String price = (first_class) ? fir_price : coa_price; 
+		
+		char[] price_ch = new char[price.length()+1];
+		
+		price_ch = price.toCharArray();
+		
+		int thousand=0;
+		for (int m=0; m<price.length()-1; m++){
+			
+			if(m+1+thousand<price.length()){
+			
+				if(price_ch[m+1]==','){
+					thousand++;
+				}
+			
+				price_ch[m] = price_ch[m+1+thousand];
+			}
 		}
-		else return coa_price;
+		
+		return Float.parseFloat(String.valueOf(price_ch));
+		
 	}
 	
 	
-	public LocalTime getLocalTime(boolean depart){
+	private void convertToTime(){
 		
+		dep_time = new LocalTime();
+		arr_time = new LocalTime();
 		
+		SimpleDateFormat date_format = new SimpleDateFormat("yyyy MMM dd HH:mm z",Locale.ENGLISH);
+		
+		if(dep_time_str!=""&&arr_time_str!="") {
+			try {
+				
+				Date da = date_format.parse(dep_time_str);
+				dep_time.setTime(da.getTime());
+				da = date_format.parse(arr_time_str);
+				arr_time.setTime(da.getTime());
+
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public LocalTime getDATime(boolean depart){
+		
+		if(dep_time==null||arr_time==null) convertToTime();
 		
 		if (depart){
 			return dep_time;
 		}else{
 			return arr_time;
 		}
-	}
-	
-	public String getLocalTimeString(boolean depart){
-		if (depart){
-			return dep_time.getTimeString();
-		}else{
-			return arr_time.getTimeString();
-		}
+		
 	}
 	
 	public String getDateCode(boolean depart){
-		if (depart){
-			return dep_time.getDateCode();
-		}else{
-			return arr_time.getDateCode();
-		}
+		
+		if(dep_time==null||arr_time==null) convertToTime();
+		return  (depart) ? LocalTime.parseToDateCode(dep_time) : LocalTime.parseToDateCode(arr_time);
+		
 	}
 	
 	
+	@SuppressWarnings("static-access")
 	public Airport getAirport(boolean depart){
+		
 		String code = "";
 		if(depart==true){
 			code = dep_code;
@@ -208,12 +219,12 @@ public class Flight {
 		ArrayList<Airport> list = new ArrayList<Airport>();
 
 			list = r.getAirportList();
-		
 			
 		Iterator<Airport> ite = list.iterator();
 		
 		while(ite.hasNext()){
 			Airport temp = ite.next();
+			
 			if(code.equals(temp.getCode())){
 				return temp;
 			}
@@ -222,30 +233,47 @@ public class Flight {
 		return null;
 	}
 	
+	public String getDAOffsetString(boolean depart){
+		
+		String str = "";
+		
+		if(depart){
+			
+			str =  dep_time.toOffsetTimeString(dep_port);
+		}else{
+			str =  arr_time.toOffsetTimeString(arr_port);
+
+		}
+		
+		String zone_name = (depart)? dep_port.getTimeZone(): arr_port.getTimeZone();
+		String substr = str.substring(0, str.length()-3);
+		
+		return substr + zone_name;
+	}
 	
 	
 	public Airplane getAirplane(){
+		
 		return model;
+		
 	}
 	
 	public int getSeat(boolean input){
+		
 		if(input){
 			return fir_seat;
 		}else{
 			return coa_seat;
 		}
+		
 	}
 	
 	
-	public boolean hasSeat(boolean _first_class){
-		if(_first_class){
-			if(fir_seat==0) return false;
-		}else{
-			if(coa_seat==0) return false;
-		}
-		return true;
+	public boolean hasSeat(){
+		
+		if(fir_seat==0 && coa_seat==0 ) return false;
+		else return true;
+		
 	}
-	
-	
 	
 }

@@ -1,15 +1,17 @@
+package cs509.hobbits.search;
+
 /**
  * This is the class to generalize Airplanes
  * 
  * @author Xu Han 
  * 
  */
-package cs509.hobbits.search;
 
 public class Airplane {
 	
 	private String manufacturer;
 	private String model;
+	
 	private int first_class_seats;
 	private int coach_seats;
 	
@@ -39,6 +41,7 @@ public class Airplane {
 	}
 	
 	public String getManufacturer(){
+		
 		return manufacturer;
 		
 	}

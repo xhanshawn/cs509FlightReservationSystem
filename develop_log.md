@@ -14,12 +14,22 @@ This branch contains all the back end codes.
 	5. Changed the core algorithm because of aiming at saving time by asking for plans separately.
 	
 2. version 0.2: 2015 04 05:
-	1. Modified the get local time function by using Goolge time zone API;
+	1. Modified the get local time function by using Google time zone API;
 	2. Added customizing window time function.
-	3. Solving the efficiency problems caused by Usage Rate Limits of Google time zone API.
-		
+	3. Solving the efficiency problems caused by Usage Rate Limits of Google time zone API;
+	
+	
 3. version 0.3: 2015 04 08:
 	1. Restructured the codes by creating two new classes called ResponseFactory and XMLTxtBuilder.
 	2. Added two functions about getting Airports list and Airplane list.
-	3. Tested Class Airplane, Airport and LocalTime. 
+	3. Tested Class Airplane, Airport and LocalTime.
 	4. Rewrited some methods inside these three classes to improve the efficiency.
+4. version 0.4: 2015 05 17:
+	1. Changed time showed into local time.
+	2. Used API from timezoneDB.com insead of Google, so that avoid over query limit
+	3. Fixed the bug that cannot show round trip successfully.
+5. version 0.41: 2015 05 17:
+	1. Fixed the bug that shows the local time not fully correct
+	2. Reconstructed all the codes
+	3. Changed the protocols to get the round trip flights
+	

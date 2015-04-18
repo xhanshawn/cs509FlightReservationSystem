@@ -1,3 +1,4 @@
+package cs509.hobbits.search;
 /**
  * This is the class to generalize Local Time of depart places or arrival places
  * 
@@ -5,124 +6,83 @@
  * 
  */
 
-package cs509.hobbits.search;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
+import java.util.TimeZone;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 
-public class LocalTime {
+
+
+public class LocalTime extends Date {
 	
-	private Date time_in_date;
-	private String time_zone;
-	private String gmt_time_str;
-	private String time_str;
+	private static String offset_time_str;
 	
-	private Airport airport;
-	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7069728987148131849L;
+
 	public LocalTime(){
-		
-		gmt_time_str = "";
-		time_zone = "";
-		time_in_date = null;
-		
+		offset_time_str = null;
 	}
 	
 	
-	/*
-	 * This method convert String of date to attributes
-	 */
-	
-	
-	
-	/*
-	 * This method converts string to specific time
-	 */
-	public void setTime(String _time){
+	@SuppressWarnings("deprecation")
+	public String toOffsetTimeString(Airport airport){
 		
-		gmt_time_str = _time;
+		if(offset_time_str==null){
+			long offset = airport.getOffset();
+		
+			Date da = new Date();
+			da.setTime(this.getTime() + offset*1000);
+		
+			long dst_offset = 0;
+		
+			if(airport.dstIsUsed()) dst_offset = getDSTOffset(da);
+		
+			this.setTime(this.getTime() + offset*1000 + dst_offset*1000);
 			
+			offset_time_str = this.toGMTString();
+		}
+		return offset_time_str;
 	}
 	
-	public void setAirport(Airport _port){
-		airport = _port;
-	}
-	
-	
-	private void convertToDate(){
-		time_in_date = new Date();
+	public static long getDSTOffset(Date da){
 		
-		SimpleDateFormat date_format = new SimpleDateFormat("yyyy MMM dd HH:mm z",Locale.ENGLISH);
+		SimpleDateFormat date_format = new SimpleDateFormat("E yyyy MM dd HH:mm z");
+		date_format.setTimeZone(TimeZone.getTimeZone("GMT"));
 		
-		try {
-			Date da1 = date_format.parse(gmt_time_str);
-			time_in_date.setTime(airport.getOffset() + da1.getTime());
-			
-			
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		String formated_time = date_format.format(da);
+		String [] strs = formated_time.split(" ");
+		String sun = strs[0];
+		
+		int month = Integer.parseInt(strs[2]);
+		int day = Integer.parseInt(strs[3]);
+		int hour = Integer.parseInt(strs[4].substring(0,2));
+		
+		if(month+1 >4 && month+1 <11) return 0;
+		
+		if(month+1 == 3 && day>7 && sun.equals("Sun") &&hour>2){
+			return 0;
 		}
 		
-	}
-	
-	
-	public Date getTime(){
-		
-		if(time_in_date==null) this.convertToDate();
-		return time_in_date;
-		
-	}
-	
-	
-	
-	public String getTimeString(){
-		
-		if(time_in_date==null) this.convertToDate();
-		
-		String str = time_in_date.toGMTString();
-		String strs [] =  str.split(" ");
-		strs[strs.length-1] = this.getTimeZone();
-		
-		StringBuffer buf =  new StringBuffer();
-		for(int i=0; i<strs.length-1; i++){
-			buf.append(strs[i]+" ");
+		if(month+1 == 11 && day<=7 && sun.equals("Sun") &&hour<2){
+			return 0;
 		}
-		buf.append(strs[strs.length-1]);
 		
-		time_str = buf.toString();
-		
-		return time_str;
+		return -3600;
 	}
 	
-	public String getDateCode(){
-		String date_code = "";
+	public static String parseToDateCode(LocalTime lc){
 		
-		if(time_in_date==null) this.convertToDate();
+		SimpleDateFormat date_format = new SimpleDateFormat("yyyy_MM_dd HH:mm z");
+		date_format.setTimeZone(TimeZone.getTimeZone("GMT"));
 
-		SimpleDateFormat date_format = new SimpleDateFormat("yyyy_MM_dd",Locale.ENGLISH);
+		String gmt_str = date_format.format(lc);
+		String[] strs = gmt_str.split(" ");
 		
+		return strs[0];
 		
-		date_code = date_format.format(time_in_date);
-		
-		return date_code;
-			
-	}
-	
-	public String getTimeZone()
-	{	
-		if(time_zone.equals("")) time_zone = airport.getTimeZone();
-		return time_zone;
 	}
 	
 }

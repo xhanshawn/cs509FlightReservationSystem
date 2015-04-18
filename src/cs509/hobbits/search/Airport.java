@@ -1,12 +1,11 @@
+package cs509.hobbits.search;
+
 /**
  * This is the class to generalize Airports
  * 
  * @author Xu Han 
  * 
  */
-
-
-package cs509.hobbits.search;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,17 +22,20 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
-
 public class Airport {
-	final private float PERCENTAGE = 0.33f; 
+	
+	final private float PERCENTAGE = 0.2f; 
 	
 	
 	private String code;
 	private String name;
+	private String time_zone;
+	
 	private float latitude;
 	private float longitude;
-	private String time_zone;
+
 	private long offset;
+	private int dst;
 	
 	public Airport(){
 		
@@ -41,7 +43,8 @@ public class Airport {
 		name = "";
 		latitude = 0.0f;
 		longitude = 0.0f;
-	
+		dst = 0;
+		
 	}
 	
 	/*
@@ -61,38 +64,65 @@ public class Airport {
 		
 	}
 	
-	public void setTimeZone(String _day){
-		_day += " 00:00 GMT";
-		SimpleDateFormat date_format = new SimpleDateFormat("yyyy_MM_dd HH:mm z",Locale.ENGLISH);
+	//this setter is only called when initialization and update airport lists and time zone information
+	public void setTimeZone(){
 		
-		String location = this.getLatitude() + "," + this.getLongitude();
+		JSONObject obj = retrieveTimeZone();
+		
+		try {
+			
+			time_zone = obj.getString("abbreviation");
+			offset = obj.getLong("gmtOffset");
+			dst =  obj.getInt("dst");
+			
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	//this method is used to retrieve Time Zone informations from API provided by timezoneDB
+	//the default time is "2015 05 10 12:00 GMT". The DST is assumed
+	private JSONObject retrieveTimeZone(){
+		
+		String sample_date = "2015 05 10 12:00 GMT";
+		SimpleDateFormat date_format = new SimpleDateFormat("yyyy MM dd HH:mm z",Locale.ENGLISH);
+		
+		Date day = null;
+		
+		try {
+			
+			day = date_format.parse(sample_date);
+			
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		String location = this.getLatitude() + "&lng=" + this.getLongitude();
 		
 		JSONObject obj = null;
 		
-		String url = "https://maps.googleapis.com/maps/api/timezone/json?location="
-		+ location +"&timestamp=";
+		String url = "http://api.timezonedb.com/?format=json&lat="
+		+ location +"&key=NMBW9G7ILB6H&timestamp=" + day.getTime()/1000;
+		
 		try {
-			Date date = (Date) date_format.parse(_day);
-			url += "" + date.getTime()/1000;
+			
 			URL u = new URL(url);
 			HttpURLConnection connection = (HttpURLConnection) u.openConnection();
-			
 			connection.setRequestMethod("GET");
 			
 			int responseCode = connection.getResponseCode();
 			
-		
-			
-			
 			if ((responseCode>=200) && (responseCode <=299)){
-				InputStream is = connection.getInputStream();
 				
+				InputStream is = connection.getInputStream();
 				BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 				StringBuilder str = new StringBuilder();
 				String line = "";
 				
 				while((line=reader.readLine())!=null){
-					
 					
 					str.append(line);
 					
@@ -100,39 +130,23 @@ public class Airport {
 				
 				obj = new JSONObject(str.toString());
 				
-
-				
 				if(obj.has("errorMessage")||!obj.getString("status").equals("OK"))
 					{
-						try{Thread.sleep(2000);
+						try{
+							Thread.sleep(2000);
+						
 						}
-						catch(Exception ex){}
+						catch(Exception ex){
+							ex.printStackTrace();
+						}
 					
-						setTimeZone(_day);
+						retrieveTimeZone();
+						
 					}
-				
-				String timezone = obj.getString("timeZoneName");
-				
-				String[] sArray = timezone.split(" ");
-				int length = 0;
-				String acronym = ""; 
-				while(length<sArray.length){
-					acronym += sArray[length].charAt(0);
-					length++;
-				}
-				
-				time_zone = acronym;
-					
-				
-				offset = obj.getLong("dstOffset") + obj.getLong("rawOffset");
-				
-				
-				
-				
 				
 			}
 			
-		} catch (ParseException | IOException e) {
+		} catch ( IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (JSONException e) {
@@ -146,30 +160,59 @@ public class Airport {
 			}
 			
 		}
+		
+		return obj;
+		
 	}
 	
 	public long getOffset(){
-		return offset;
+		
+		if(offset!=0) return offset;
+		else {
+			setTimeZone();
+			return offset;	
+		}
+		
 	}
 	
+	public boolean dstIsUsed(){
+		
+		if(dst==1) return true;
+		else return false;
+	
+	}
+	
+	
 	public String getCode(){
+		
 		return code;
+		
 	}
 	
 	public float getLatitude(){
+		
 		return latitude;
+		
 	}
 	public float getLongitude(){
+		
 		return longitude;
+		
 	}
 	
 	public String getTimeZone(){
+		
 		return time_zone;
+		
 	}
 	
+	//This method is to get the main direction of the flight requirements
+	//eithber be in the longitude direction or in the latitude direction
 	public boolean getDirection(Airport _arrival){
+		
 		float lat_dis = Math.abs( this.getLatitude() - _arrival.getLatitude());
 		float longi_dis = Math.abs( this.getLongitude() - _arrival.getLongitude());
+		
 		if(lat_dis>longi_dis){
 			return false;	
 		}else{
@@ -179,33 +222,41 @@ public class Airport {
 	}
 	
 	public String getAirportName(){
+		
 		return name;
+		
 	}
 	
 	public boolean isLayover(Airport _depart, Airport _arrival){
+		
 		boolean direction = _depart.getDirection(_arrival);
 		
 		double arr_dis = Math.sqrt((double)( _arrival.getLongitude() - _depart.getLongitude()))
 				+ Math.sqrt((double)( _arrival.getLatitude() - _depart.getLatitude()));
+		
 		double stopover_dis = Math.sqrt((double)( this.getLongitude() - _depart.getLongitude()))
 				+ Math.sqrt((double)( this.getLatitude() - _depart.getLatitude()));
-		if(stopover_dis>arr_dis) return false;
-	
 		
+		if(stopover_dis>arr_dis) return false;
 		
 		if(direction){
+			
 			if(Math.abs(this.getLongitude() - _depart.getLongitude()) > 
 			Math.abs(PERCENTAGE*_arrival.getLongitude() - PERCENTAGE*_depart.getLongitude())){
-				return true;}
+				return true;
+			}
+			
 			
 		}else{
+			
 			if(Math.abs(this.getLatitude() - _depart.getLatitude()) > 
 			Math.abs(PERCENTAGE*_arrival.getLatitude() - PERCENTAGE*_depart.getLatitude())){
-				return true;}
+				return true;
+			}
 		}
 		
 		return false;
+		
 	}
-	
 	
 }

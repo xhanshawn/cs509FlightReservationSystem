@@ -1,12 +1,11 @@
+package cs509.hobbits.search;
+
 /**
  * This is the class to retrieve date from server
  * 
  * @author Xu Han 
  * 
  */
-
-package cs509.hobbits.search;
-
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,11 +50,7 @@ public class DataRetriever {
 			"http://cs509.cs.wpi.edu:8181/CS509.server/ReservationSystem?team=Team08";
 	
 	private static String query_airport = "";
-	
 	private static String query_date = "";
-	
-	private static String day ="";
-	
 	
 	public DataRetriever(){
 		
@@ -67,55 +62,55 @@ public class DataRetriever {
 	private static void updateAirplaneList(){
 		
 		if(Airplane_list.isEmpty())	 {
-			ArrayList<Airplane> airplanes = new ArrayList<Airplane>();
 			
+			ArrayList<Airplane> airplanes = new ArrayList<Airplane>();
 			airplanes = getAirplaneList();
 			
 			for(int i=0; i< airplanes.size(); i++){
+				
 				Airplane_list.put(airplanes.get(i).getModel(), airplanes.get(i));
 				
 			}
 		}
-		
 	}
 	
 	private static void updateAirportList(){
+		
 		if(Airport_list.isEmpty()){
+			
 			ArrayList <Airport> airports = new ArrayList<Airport>();
-			
-
-			
 			airports = getAirportList();
 			
 			for(int i=0; i< airports.size(); i++){
 				Airport_list.put(airports.get(i).getCode(), airports.get(i));
-
 			}
-		
 		}
 	}
 	
 	public static void updateLists(){
+		
 		Airport_list.clear();
 		Airplane_list.clear();
 		updateAirplaneList();
 		updateAirportList();
+		setTime();
+		
 	}
 	
-	public void setTime(String _day){
+	public static void setTime(){
 		
-
-		
-		if(!day.equals(_day)){
-			day = _day;
+		if(!Airport_list.isEmpty()){
 		
 			for(Map.Entry<String, Airport> entry : Airport_list.entrySet()){
-				entry.getValue().setTimeZone(day);
-		
+				
+				entry.getValue().setTimeZone();
+
 			}
 		}
-		
 	}
+	
+	
+	
 	/*
 	 * This method is used to retrieve the data stream from server
 	 */
@@ -124,8 +119,6 @@ public class DataRetriever {
 		URL url = null;
 		HttpURLConnection connection;
 	
-		
-		
 		try{
 			
 			switch(list_type){
@@ -163,9 +156,6 @@ public class DataRetriever {
 			e.printStackTrace();
 		}
 		
-		
-		
-		
 		return null; 
 	}
 	
@@ -181,18 +171,16 @@ public class DataRetriever {
 		Document document = null;
 		
 		try {
+			
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			
 			DocumentBuilder builder = factory.newDocumentBuilder();
-			
 			Reader reader = new InputStreamReader(input,"UTF-8");
-			 
 			InputSource is = new InputSource(reader);
-		    
 			is.setEncoding("UTF-8");
 		    
 			document = builder.parse(is);
 			document.normalize();
+			
 		} catch (SAXException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -242,14 +230,11 @@ public class DataRetriever {
 		Element root=null;
 		
 		try {
+			
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		
 			DocumentBuilder builder = factory.newDocumentBuilder();
-		
 			Reader reader = new InputStreamReader(input,"UTF-8");
-		 
 			InputSource is = new InputSource(reader);
-	    
 			is.setEncoding("UTF-8");
 			
 			document = builder.parse(is);
@@ -270,6 +255,7 @@ public class DataRetriever {
 		NodeList list = root.getElementsByTagName("Airplane");
 		
 		ArrayList<Airplane> airplane_List = new ArrayList<Airplane>();
+		
 		for (int i = 0; i < list.getLength() ; i++){
 			
 			Airplane airplane = new Airplane();
@@ -280,15 +266,16 @@ public class DataRetriever {
 			
 			int first_class = Integer.parseInt(list.item(i).getFirstChild().getTextContent());
 			int coach = Integer.parseInt(list.item(i).getLastChild().getTextContent());
+			
 			airplane.setSeats(first_class, coach);
 			airplane.setModel(Manufacturer, Model);
-			
 			
 			airplane_List.add(airplane);
 			
 		}
 		
 		return airplane_List;
+		
 	}
 	
 	
@@ -307,20 +294,15 @@ public class DataRetriever {
 		}
 		
 		ArrayList<Flight> flight_list = new ArrayList<Flight> ();
-	
 		InputStream input = getStream(list_type);
 	
 		Document document = null;
 	
 		try {
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		
 			DocumentBuilder builder = factory.newDocumentBuilder();
-		
 			Reader reader = new InputStreamReader(input,"UTF-8");
-		 
 			InputSource is = new InputSource(reader);
-	    
 			is.setEncoding("UTF-8");
 	    
 			document = builder.parse(is);
@@ -341,8 +323,6 @@ public class DataRetriever {
 
 		for (int i = 0; i < list.getLength() ; i++){	
 		
-		
-		
 			String airplane = ((Element)list.item(i)).getAttribute("Airplane");
 			int Time = Integer.parseInt(((Element)list.item(i)).getAttribute("FlightTime"));
 			int Number = Integer.parseInt(((Element)list.item(i)).getAttribute("Number"));
@@ -351,12 +331,10 @@ public class DataRetriever {
 		
 		
 			String dep_code = detail.item(0).getFirstChild().getTextContent();
-		
 			String dep_time = detail.item(0).getLastChild().getTextContent();
 		
 		
 			String arr_code = detail.item(1).getFirstChild().getTextContent();
-		
 			String arr_time = detail.item(1).getLastChild().getTextContent();
 		
 		
@@ -375,10 +353,10 @@ public class DataRetriever {
 			flight.setNumber(Number);
 			flight.setAirports(Airport_list.get(dep_code), Airport_list.get(arr_code));
 			flight.setFlightTime(Time);
-			flight.setLocalTime(dep_time, arr_time);
+			flight.setDATime(dep_time, arr_time);
 			flight.setPrice(first_class, coach);
 			
-			if(!flight.hasSeat(FIRST)&&!flight.hasSeat(COACH)) continue;
+			if(!flight.hasSeat()) continue;
 		
 			flight_list.add(flight);
 		
@@ -389,27 +367,4 @@ public class DataRetriever {
 	}		
 	
 }
-
-
-
-
-
-	
-
-
-	
-
-	
-
-
-
-
-
-	
-	
-	
-	
-	
-	
-
 
