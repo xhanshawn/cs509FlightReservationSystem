@@ -11,12 +11,14 @@ import java.util.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+
 import javax.servlet.http.HttpServletRequest;
 
 import cs509.hobbits.search.Airplane;
 import cs509.hobbits.search.Airport;
 import cs509.hobbits.search.DataRetriever;
 import cs509.hobbits.search.FlightPlan;
+import cs509.hobbits.search.ListToXMLBuilder;
 import cs509.hobbits.search.SearchResults;
 
 public class ResponseFactory {
@@ -126,24 +128,24 @@ public class ResponseFactory {
 		
 		if(results.isEmpty()) return null;	
 
-  		return XMLTxtBuilder.buildPlanXML(results, round_trip);
+  		return ListToXMLBuilder.buildPlanXML(results, round_trip);
 		
 	}
 	
 	public static String actionList(HttpServletRequest request){
-		
+	
 		String list_type = request.getParameter("list_type");
 		
 		if(list_type.equals("airports")) {
 			
 			ArrayList <Airport> airports = DataRetriever.getAirportList();
-			return XMLTxtBuilder.buildAirportsXML(airports);
+			return ListToXMLBuilder.buildAirportsXML(airports);
 		}
 		
 		if(list_type.equals("airplanes")) {
 			
 			ArrayList <Airplane> airplanes = DataRetriever.getAirplaneList();
-			return XMLTxtBuilder.buildAirplanesXML(airplanes);
+			return ListToXMLBuilder.buildAirplanesXML(airplanes);
 		}
 		
 		return null;

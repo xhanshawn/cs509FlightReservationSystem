@@ -1,4 +1,4 @@
-package cs509.hobbits.web;
+package cs509.hobbits.search;
 
 /**
  * This class is used to build xml
@@ -24,12 +24,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
 
-import cs509.hobbits.search.Airplane;
-import cs509.hobbits.search.Airport;
-import cs509.hobbits.search.Flight;
-import cs509.hobbits.search.FlightPlan;
-
-public class XMLTxtBuilder {
+public class ListToXMLBuilder {
 	
 	private static Document mDoc = null;
 
@@ -66,11 +61,11 @@ public class XMLTxtBuilder {
   			mRootNode.appendChild(elementFP);
   			
   			attr = mDoc.createAttribute("FirstClass");
-  			attr.setValue(results.get(i).getPrice(true)+"");
+  			attr.setValue( ""+ results.get(i).getPrice(true));
   			elementFP.setAttributeNode(attr);
   			
   			attr = mDoc.createAttribute("Coach");
-  			attr.setValue(results.get(i).getPrice(false)+"");
+  			attr.setValue("" + results.get(i).getPrice(false));
   			elementFP.setAttributeNode(attr);
   			
   			attr = mDoc.createAttribute("Stopover");

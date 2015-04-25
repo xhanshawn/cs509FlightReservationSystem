@@ -24,7 +24,7 @@ import org.json.JSONObject;
 
 public class Airport {
 	
-	final private float PERCENTAGE = 0.2f; 
+	final private float PERCENTAGE = 0.30f; 
 	
 	
 	private String code;
@@ -213,8 +213,11 @@ public class Airport {
 		float lat_dis = Math.abs( this.getLatitude() - _arrival.getLatitude());
 		float longi_dis = Math.abs( this.getLongitude() - _arrival.getLongitude());
 		
+		
 		if(lat_dis>longi_dis){
+			
 			return false;	
+			
 		}else{
 			return true;
 		}

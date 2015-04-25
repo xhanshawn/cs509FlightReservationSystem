@@ -44,8 +44,10 @@ public class SearchResults {
 	private ArrayList <Airport> airport_list;
 	
 	private static long window = 0l;
+	private long max_window = 24*60l;
 	
 	public SearchResults(String _depart, String _arrival, String _depart_date, int _stop_num, long _window){
+		
 		
 		window = _window;
 		dep_code = _depart;
@@ -57,24 +59,8 @@ public class SearchResults {
 		//this part sort the airports 
 		airport_list = DataRetriever.getAirportList();
 		
-		Collections.sort( airport_list , new Comparator<Airport>(){
-
-			@Override
-			public int compare(Airport o1, Airport o2) {
-				// TODO Auto-generated method stub
-				
-				if (o1.getLongitude()*1000000 != o2.getLongitude()*1000000){
-					if (direction==HORIZONTAL){
-						return (int) (o1.getLongitude()*1000000 - o2.getLongitude()*1000000);
-					}else{
-						return (int) (o1.getLatitude()*1000000 - o2.getLatitude()*1000000);
-					}
-				}
-				
-				return 0;
-			}
-	
-		});
+		
+		
 		
 		// this part convert the dep_code and arr_code strings into their corresponding airports.
 		Iterator <Airport> ite = airport_list.iterator();
@@ -90,6 +76,28 @@ public class SearchResults {
 				arrival = temp;
 			}
 		}
+		
+		
+		direction = depart.getDirection(arrival);
+		Collections.sort( airport_list , new Comparator<Airport>(){
+
+			@Override
+			public int compare(Airport o1, Airport o2) {
+				// TODO Auto-generated method stub
+				
+				if (o1.getLongitude()*1000000 != o2.getLongitude()*1000000){
+					if (direction==HORIZONTAL){
+						return (int) (o1.getLongitude()*1000000 - o2.getLongitude()*1000000);
+					}else{
+
+						return (int) (o1.getLatitude()*1000000 - o2.getLatitude()*1000000);
+					}
+				}
+				
+				return 0;
+			}
+	
+		});
 		
 		SimpleDateFormat date_format = new SimpleDateFormat("yyyy_MM_dd HH:mm z",Locale.ENGLISH);
 		String depart_time = depart_date + " 00:00 GMT";
@@ -147,7 +155,6 @@ public class SearchResults {
 		DataRetriever retrieve = new DataRetriever();
 		
 		//if the time of depart is larger than 22:00, 
-		
 		String date_code = "";
 		ArrayList <Flight> depart_list = null;
 		
@@ -190,8 +197,8 @@ public class SearchResults {
 					}
 					
 				}else{
-					if((current.getDATime(DEP).getTime()
-						- _time.getTime() > window*60*1000) ){
+					if((current.getDATime(DEP).getTime() - _time.getTime() > window*60*1000
+							&& current.getDATime(DEP).getTime() - _time.getTime() <max_window*60*1000) ){
 				
 						if(depart_list.get(i).hasSeat()){
 							FlightPlan temp = new FlightPlan(depart_list.get(i));
@@ -226,6 +233,7 @@ public class SearchResults {
 			
 		int dep_index = airport_list.indexOf(_depart);
 		int arr_index = airport_list.indexOf(_arrival);
+		
 		
 		//get plan from the depart airport to the arrival airport by the main direction.
 		for (int i = Math.min(dep_index, arr_index); i< Math.max(dep_index, arr_index) + 1; i++){

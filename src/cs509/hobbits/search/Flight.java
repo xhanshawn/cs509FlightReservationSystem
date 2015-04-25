@@ -159,7 +159,7 @@ public class Flight {
 			}
 		}
 		
-		return Float.parseFloat(String.valueOf(price_ch));
+		return (float) ((Math.round(Float.parseFloat(String.valueOf(price_ch))*100))*0.01);
 		
 	}
 	
@@ -174,10 +174,10 @@ public class Flight {
 		if(dep_time_str!=""&&arr_time_str!="") {
 			try {
 				
-				Date da = date_format.parse(dep_time_str);
-				dep_time.setTime(da.getTime());
-				da = date_format.parse(arr_time_str);
-				arr_time.setTime(da.getTime());
+				Date da1 = date_format.parse(dep_time_str);
+				dep_time.setTime(da1.getTime());
+				Date da2 = date_format.parse(arr_time_str);
+				arr_time.setTime(da2.getTime());
 
 			} catch (ParseException e) {
 				// TODO Auto-generated catch block
@@ -198,7 +198,7 @@ public class Flight {
 		
 	}
 	
-	public String getDateCode(boolean depart){
+	public String getGMTDateCode(boolean depart){
 		
 		if(dep_time==null||arr_time==null) convertToTime();
 		return  (depart) ? LocalTime.parseToDateCode(dep_time) : LocalTime.parseToDateCode(arr_time);
@@ -237,13 +237,8 @@ public class Flight {
 		
 		String str = "";
 		
-		if(depart){
-			
-			str =  dep_time.toOffsetTimeString(dep_port);
-		}else{
-			str =  arr_time.toOffsetTimeString(arr_port);
-
-		}
+		
+		str = getDATime(depart).toOffsetTimeString((depart)? dep_port: arr_port);
 		
 		String zone_name = (depart)? dep_port.getTimeZone(): arr_port.getTimeZone();
 		String substr = str.substring(0, str.length()-3);

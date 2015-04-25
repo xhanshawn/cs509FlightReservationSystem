@@ -14,62 +14,107 @@ import cs509.hobbits.search.LocalTime;
 
 public class LocalTimeTest {
 
-
+	
 	@Test
-	public void testSetTime() {
+	public void testToOffsetTimeString() {
 		LocalTime lc = new LocalTime();
 		Airport airport = new Airport();
 		
+		Date da = new Date();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy MM dd HH:mm z");
+		try {
+			da = sdf.parse("2015 05 09 09:35 GMT");
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		lc.setTime(da.getTime());
 		airport.setLocation(40.00f, -75.00f);
-		airport.setTimeZone("2015_05_10");
-		lc.setAirport(airport);
+		airport.setTimeZone();
 		
-		lc.setTime("2015 May 10 05:04 GMT");
-		
-		assertEquals("2015_05_10",lc.getDateCode());
+
+		assertEquals("9 May 2015 05:35:00 GMT",lc.toOffsetTimeString(airport) );
 		
 	}
 
 	@Test
-	public void testGetTime() {
+	public void testGetDSTOffset() {
 		LocalTime lc = new LocalTime();
-		Airport airport = new Airport();
 		
-		airport.setLocation(40.00f, -75.00f);
-		airport.setTimeZone("2015_05_10");
-		lc.setAirport(airport);
+		Date dateDST = new Date();
 		
-		lc.setTime("2015 May 10 05:04 GMT");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy MM dd E HH:mm z");
 		
-		
-		SimpleDateFormat date_format = new SimpleDateFormat("yyyy MMM dd HH:mm z",Locale.ENGLISH);
+		String may_date = "2015 05 12 Tue 00:00 GMT";
 		
 		try {
-			Date da1 = date_format.parse("2015 May 10 05:04 GMT");
+			dateDST = sdf.parse(may_date);
 			
-			assertEquals(da1, lc.getTime());
+			assertEquals(0l,lc.getDSTOffset(dateDST));
+			
+			String dec_date = "2015 12 12 Sat 00:00 EDT";
+			
+			Date dateNotDST = sdf.parse(dec_date);
+			
+			assertEquals(-3600l,lc.getDSTOffset(dateNotDST));
+			
+			String edgecase1 = "2015 03 08 Sun 02:00 EDT";
+			
+			dateDST = sdf.parse(edgecase1);
+			
+			assertEquals(0l,lc.getDSTOffset(dateDST));
+			
+			String edgecase2 = "2014 11 02 Sun 02:00 PDT";
+			
+			dateNotDST = sdf.parse(edgecase2);
+			
+			assertEquals(-3600l,lc.getDSTOffset(dateNotDST));
+
 			
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} 
+		}
+		
+		
+		
+		
 		
 
 	}
 	
 	
 	@Test
-	public void testGetTimeZone() {
-		LocalTime lc = new LocalTime();
-		Airport airport = new Airport();
+	public void testParseToDateCode() {
+		LocalTime lcmore10 = new LocalTime();
 		
-		airport.setLocation(40.00f, -75.00f);
-		airport.setTimeZone("2015_05_10");
-		lc.setAirport(airport);
+		Date datemore10 = new Date();
+		Date dateless10 = new Date();
 		
-		lc.setTime("2015 May 10 05:04 GMT");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy MM dd E HH:mm z");
 		
-		assertEquals("EDT", lc.getTimeZone());
+		String date_more10 = "2015 05 12 Tue 00:00 GMT";
+		String date_less10 = "2015 05 08 Tue 00:00 GMT";
+
+		
+		try {
+			datemore10 = sdf.parse(date_more10);
+			dateless10 = sdf.parse(date_less10);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		lcmore10.setTime(datemore10.getTime());
+		
+		LocalTime lcless10 = new LocalTime();
+		
+		lcless10.setTime(dateless10.getTime());
+		
+		
+		assertEquals("2015_05_12", LocalTime.parseToDateCode(lcmore10));
+		assertEquals("2015_05_08", LocalTime.parseToDateCode(lcless10));
+
 		
 
 	}

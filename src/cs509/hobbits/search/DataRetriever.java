@@ -93,11 +93,11 @@ public class DataRetriever {
 		Airplane_list.clear();
 		updateAirplaneList();
 		updateAirportList();
-		setTime();
+		setTimeZone();
 		
 	}
 	
-	public static void setTime(){
+	public static void setTimeZone(){
 		
 		if(!Airport_list.isEmpty()){
 		
@@ -177,7 +177,6 @@ public class DataRetriever {
 			Reader reader = new InputStreamReader(input,"UTF-8");
 			InputSource is = new InputSource(reader);
 			is.setEncoding("UTF-8");
-		    
 			document = builder.parse(is);
 			document.normalize();
 			

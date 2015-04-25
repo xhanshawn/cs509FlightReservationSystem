@@ -24,12 +24,18 @@ This branch contains all the back end codes.
 	2. Added two functions about getting Airports list and Airplane list.
 	3. Tested Class Airplane, Airport and LocalTime.
 	4. Rewrited some methods inside these three classes to improve the efficiency.
-4. version 0.4: 2015 05 17:
+4. version 0.4: 2015 04 17:
 	1. Changed time showed into local time.
 	2. Used API from timezoneDB.com insead of Google, so that avoid over query limit
 	3. Fixed the bug that cannot show round trip successfully.
-5. version 0.41: 2015 05 17:
+5. version 0.41: 2015 04 17:
 	1. Fixed the bug that shows the local time not fully correct
 	2. Reconstructed all the codes
 	3. Changed the protocols to get the round trip flights
+	
+6. version 0.42: 2015 04 17
+	1. Make the price value round to 0.00
+	2. Add $ to flightplan price
+	3. Fixed the bug that cannot search results for certain places
+
 	

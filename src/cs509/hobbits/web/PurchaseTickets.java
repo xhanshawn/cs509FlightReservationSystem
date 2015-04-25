@@ -54,18 +54,28 @@ public class PurchaseTickets extends HttpServlet {
 		super.init(config);
 	}
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	 System.out.print("hehe");
+	System.out.print("hehe");
+	String flightnumber=request.getParameter("flightnum");
+	String seating= request.getParameter("seating");
+	  
+	System.out.println(flightnumber + "  " + seating);
 	}
 	public void doPost(HttpServletRequest request, 
 			HttpServletResponse response)
 			throws ServletException, IOException
 	{
+		
+		
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		  String flightnumber=request.getParameter("flightnum");
 		  String seating= request.getParameter("seating");
+		  
+		  System.out.println(flightnumber + "  " + seating);
 		  PostXML pxml = new PostXML();
-		  pxml.lock();
-		  pxml.reserve(flightnumber, seating);
+//		  pxml.lock();
 		  pxml.unlock();
+		  pxml.reserve(flightnumber, seating);
+
 		
 	}
 }

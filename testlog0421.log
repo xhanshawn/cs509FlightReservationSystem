@@ -1,0 +1,363 @@
+Date: 0421/2015
+
+Test Unit or Component name: LocalTime
+
+ 
+1. testToOffsetTimeString(): 
+	
+	a. Test Methods included: 
+		LocalTime.setTime();
+		LocalTime.toOffsetTimeString();
+	
+	b. Function: 
+		Set a specific time and get the time string considering the local time zone offset based on the location of airport.
+		
+	c. Test Case:
+		
+		I. Description:
+			Sets this Date object to represent a point in time that is time milliseconds after January 1, 1970 00:00:00 GMT.
+			Get the time in string format taking local time zone into consideration, where input are an instance of Airport.
+		
+		II. Goals:
+			Verify if setTime() can set a specific time point to LocalTime;
+			Verify if toOffsetTimeString() can return a time string considered offset time.
+			
+		III. Precondition:
+			Input a long integer for setTime();
+			Input an instance of airport with location and timezone informations.
+		
+		IV. Specific inputs and results:
+			
+			Input: "2015 05 09 09:35 GMT"
+			Expected result: "9 May 2015 05:35:00 GMT"
+			
+			Test result: 
+				Pass 1/1.
+	
+	
+
+2. testGetDSTOffset():
+
+	a. Test Methods included: 
+		LocalTime.getDSTOffset();
+
+	
+	b. Function: 
+		Get the DST offset considering the current local time and date.
+		
+	c. Test Case:
+		
+		I. Description:
+			Get the DST offset considering the current local time and date by judge if the date is in DST range.
+			
+		II. Goals:
+			Verify if getDSTOffset() can correctly get the corresponding DST offset depends on the input date.
+			Test inputs includes both the date using DST and the date not using DST. Also inputs include some edge cases.
+			
+		III. Precondition:
+			Input a instance of Date with time date and time zone specified.
+		
+		IV. Specific inputs and results:
+			
+			1. common case of DST used
+			Input: instance of date: "2015 05 12 Tue 00:00 GMT"
+			Expected result: "0l"
+			
+			2. common case of DST not used
+			Input: instance of date: "2015 12 12 Sat 00:00 EDT"
+			Expected result: "-3600l"
+			
+			
+			3. edge case of DST used
+			Input: instance of date: "2015 03 08 Sun 02:00 EDT"
+			Expected result: "0l"
+			
+			3. edge case of DST not used
+			Input: instance of date: "2014 11 02 Sun 02:00 PDT"
+			Expected result: "-3600l"
+			
+			Test result: 
+				Pass 2/4, Failure 2/4:
+				
+				Failure trace:
+				
+				java.lang.AssertionError: expected:<0> but was:<-3600>
+					at org.junit.Assert.fail(Assert.java:88)
+					at org.junit.Assert.failNotEquals(Assert.java:743)
+					at org.junit.Assert.assertEquals(Assert.java:118)
+					at org.junit.Assert.assertEquals(Assert.java:555)
+					at org.junit.Assert.assertEquals(Assert.java:542)
+					at cs509.hobbits.test.LocalTimeTest.testGetDSTOffset(LocalTimeTest.java:65)
+					at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+					at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+					at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+					at java.lang.reflect.Method.invoke(Method.java:483)
+					at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:47)
+					at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+					at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:44)
+					at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+					at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:271)
+					at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:70)
+					at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:50)
+					at org.junit.runners.ParentRunner$3.run(ParentRunner.java:238)
+					at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:63)
+					at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:236)
+					at org.junit.runners.ParentRunner.access$000(ParentRunner.java:53)
+					at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:229)
+					at org.junit.runners.ParentRunner.run(ParentRunner.java:309)
+					at org.eclipse.jdt.internal.junit4.runner.JUnit4TestReference.run(JUnit4TestReference.java:50)
+					at org.eclipse.jdt.internal.junit.runner.TestExecution.run(TestExecution.java:38)
+					at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:459)
+					at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:675)
+					at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.run(RemoteTestRunner.java:382)
+					at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.main(RemoteTestRunner.java:192)
+
+				
+				Failure reason and solution:
+			
+					reason: judgement codes for month is wrong.
+			
+					solution: modify the original codes for judging the month is in March or November.
+				
+				
+
+				
+				
+3. testParseToDateCode(): 
+	
+	a. Test Methods included: 
+		LocalTime.parseToDateCode();
+	
+	b. Function: 
+		Parse an instance of LocalTime to Date Code in format("yyyy_MM_dd").
+		
+	c. Test Case:
+		
+		I. Description:
+			Parse an instance of LocalTime to Date Code in format("yyyy_MM_dd"), which is used for query flights infomations on the server.
+			
+		II. Goals:
+			Verify if parseToDateCode() can parse an common instance of LocalTime to Date Code string;
+			Verify if parseToDateCode() can parse an instance of LocalTime with day number is less than ten to Date Code string correctly;
+			
+		III. Precondition:
+			Input an instance of LocalTime with day number > 9;
+			Input an instance of LocalTime with day number < 10;
+		
+		IV. Specific inputs and results:
+			
+			1. Day more than 9
+			Input: an instance of LocalTime with ""2015 05 12 Tue 00:00 GMT""
+			Expected result: "2015_05_12"
+			
+			2. Day less than 10
+			Input: an instance of LocalTime with ""2015 05 08 Tue 00:00 GMT""
+			Expected result: "2015_05_08"
+			
+			Test result: 
+				Pass 2/2.	
+				
+Date: 0422/2015
+
+Test Unit or Component name: DataRetriever
+
+				
+1. testGetAirportList(): 
+	
+	a. Test Methods included: 
+		DataRetriever.getAirportList();
+		DataRetriever.getStream();
+	
+	b. Function: 
+		Retrieve airport information from the remote database.
+		
+	c. Test Case:
+		
+		I. Description:
+			Retrieve the airports information in the ArrayList<Airport> format from the remote database by using XML.
+			Set all the attributes and to corresponding Airport instances correctly
+		
+		II. Goals:
+			Verify if getStream() can return data stream based on query input types by using Http get operation.
+			Verify if getAirportList() can return a correct list of Airports.
+			Verify if all the Airports' attributes match the instance.
+			
+			
+		III. Precondition:
+			Valid integer input for getStream().
+			Internet connection is working.
+		
+		IV. Specific inputs and results:
+			
+			Expected results: 
+				
+				Size of ArrayList:	52
+				Number of airports whose code is "FLL": 1
+				Number of airports whose name is "Minneapolis/St. Paul International": 1
+				Number of airports whose latitude is 21.324808f and longitude is -157.92519f: 1
+				Number of airports whose name is "Mineta San José International": 1
+				
+			Test result: 
+				Pass 4/5, Failure 1/5.
+				
+				Failure trace:
+				
+				java.lang.AssertionError: expected:<1> but was:<0>
+					at org.junit.Assert.fail(Assert.java:88)
+					at org.junit.Assert.failNotEquals(Assert.java:743)
+					at org.junit.Assert.assertEquals(Assert.java:118)
+					at org.junit.Assert.assertEquals(Assert.java:555)
+					at org.junit.Assert.assertEquals(Assert.java:542)
+					at cs509.hobbits.test.DataRetrieverTest.testGetAirportList(DataRetrieverTest.java:41)
+					at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+					at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+					at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+					at java.lang.reflect.Method.invoke(Method.java:483)
+					at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:47)
+					at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+					at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:44)
+					at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+					at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:271)
+					at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:70)
+					at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:50)
+					at org.junit.runners.ParentRunner$3.run(ParentRunner.java:238)
+					at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:63)
+					at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:236)
+					at org.junit.runners.ParentRunner.access$000(ParentRunner.java:53)
+					at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:229)
+					at org.junit.runners.ParentRunner.run(ParentRunner.java:309)
+					at org.eclipse.jdt.internal.junit4.runner.JUnit4TestReference.run(JUnit4TestReference.java:50)
+					at org.eclipse.jdt.internal.junit.runner.TestExecution.run(TestExecution.java:38)
+					at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:459)
+					at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:675)
+					at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.run(RemoteTestRunner.java:382)
+					at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.main(RemoteTestRunner.java:192)
+
+				Failure reason and solution:
+			
+					reason: Fail parsing french characheter when parsing XML.
+			
+					
+2. testGetAirplaneList():
+
+	a. Test Methods included: 
+		DataRetriever.getAirplaneList();
+
+	b. Function: 
+		Retrieve airplane information from the remote database.
+		
+	c. Test Case:
+		
+		I. Description:
+			Retrieve the airplanes information in the ArrayList<Airplane> format from the remote database by using XML.
+			Set all the attributes and to corresponding Airplane instances correctly
+		
+		II. Goals:
+			Verify if getAirplaneList() can return a correct list of Airplanes.
+			Verify if all the Airplanes' attributes match the instance.
+			
+			
+		III. Precondition:
+			Internet connection is working.
+		
+		IV. Specific inputs and results:
+			
+			Expected results: 
+				
+				Size of ArrayList:	11
+				Number of airplanes whose manufacturer is "Airbus": 5
+				Number of airplanes whose manufacturer is "Boeing": 6
+				Number of airplanes whose model is "A380": 1
+				Has one airplane whose first class seat number is 24 and coach seat number is 82: true
+				
+			Test result: 
+				Pass 5/5
+
+
+3. testGetFlightList():
+
+	a. Test Methods included: 
+		DataRetriever.getFightList();
+
+	b. Function: 
+		Retrieve Flight information from the remote database.
+		
+	c. Test Case:
+		
+		I. Description:
+			Retrieve the Flights information in the ArrayList<Flight> format from the remote database by specifying airport code, date code and depart or arrival.
+			Set all the attributes and to corresponding Flight instances correctly
+		
+		II. Goals:
+			Verify if getFlightList() can return a correct list of Flights by specifying airport code, date code and depart or arrival.
+			Verify if all the Flights' attributes match the instance.
+			
+			
+		III. Precondition:
+			Input Airport code is comprised of 3 characheters.
+			Input Date code is in the format "yyyy_MM_dd".
+			Input a boolean variable determine if search departure flights
+			Internet connection is working.
+		
+		IV. Specific inputs and results:
+			
+			Input: "HOU", "2015_05_13", true
+			
+			Expected results: 
+				
+				Size of ArrayList:	48
+				All of the flights are departed from "HOU": true
+				All of the flights's depart date code is "2015_05_13" in GMT: 6
+				Number of flights whose number is "8045", flight time is "137", airplane model is "A320": 1
+				Number of flights whose first class seat number is " 128 - 45 = 83": 1
+				Number of flights whose coach seat number is "427 - 131 = 296": 1
+				Number of flights whose first class price is "3059.44f" and coach class price is "856.64f": 1
+				The depart time string contains offset of flight 8032: "12 May 2015 19:01:00 CDT"
+				The arrival time string contains offset of flight 8032: "12 May 2015 22:53:00 EDT"
+						
+			Test result: 
+				Pass 8/9, Failure 1/9
+				
+			Failure trace:
+				java.lang.AssertionError: expected:<1> but was:<0>
+					at org.junit.Assert.fail(Assert.java:88)
+					at org.junit.Assert.failNotEquals(Assert.java:743)
+					at org.junit.Assert.assertEquals(Assert.java:118)
+					at org.junit.Assert.assertEquals(Assert.java:555)
+					at org.junit.Assert.assertEquals(Assert.java:542)
+					at cs509.hobbits.test.DataRetrieverTest.testGetFlightList(DataRetrieverTest.java:119)
+					at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+					at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+					at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+					at java.lang.reflect.Method.invoke(Method.java:483)
+					at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:47)
+					at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+					at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:44)
+					at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+					at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:271)
+					at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:70)
+					at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:50)
+					at org.junit.runners.ParentRunner$3.run(ParentRunner.java:238)
+					at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:63)
+					at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:236)
+					at org.junit.runners.ParentRunner.access$000(ParentRunner.java:53)
+					at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:229)
+					at org.junit.runners.ParentRunner.run(ParentRunner.java:309)
+					at org.eclipse.jdt.internal.junit4.runner.JUnit4TestReference.run(JUnit4TestReference.java:50)
+					at org.eclipse.jdt.internal.junit.runner.TestExecution.run(TestExecution.java:38)
+					at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:459)
+					at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:675)
+					at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.run(RemoteTestRunner.java:382)
+					at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.main(RemoteTestRunner.java:192)
+
+				Reason: accuracy of price number
+				
+				Solution: round the price float number.
+				
+	
+	
+
+
+
+
+

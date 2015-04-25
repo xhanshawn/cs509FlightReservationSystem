@@ -15,7 +15,7 @@ import java.util.TimeZone;
 
 public class LocalTime extends Date {
 	
-	private static String offset_time_str;
+	private String offset_time_str;
 	
 	/**
 	 * 
@@ -60,13 +60,13 @@ public class LocalTime extends Date {
 		int day = Integer.parseInt(strs[3]);
 		int hour = Integer.parseInt(strs[4].substring(0,2));
 		
-		if(month+1 >4 && month+1 <11) return 0;
+		if(month >4 && month <11) return 0;
 		
-		if(month+1 == 3 && day>7 && sun.equals("Sun") &&hour>2){
+		if(month == 3 && day>7 && sun.equals("Sun") &&hour>2){
 			return 0;
 		}
 		
-		if(month+1 == 11 && day<=7 && sun.equals("Sun") &&hour<2){
+		if(month == 11 && day<=7 && sun.equals("Sun") &&hour<2){
 			return 0;
 		}
 		

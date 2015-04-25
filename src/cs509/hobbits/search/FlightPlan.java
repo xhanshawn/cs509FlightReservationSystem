@@ -63,9 +63,11 @@ public class FlightPlan {
 	public float getPrice(boolean first_class){
 		
 		if(first_class){
-			return fir_price;
+			
+			return (float) (Math.round(fir_price*100)*0.01);
 		}else{
-			return coa_price;
+			return (float) (Math.round(coa_price*100)*0.01);
+
 		}
 		
 	}

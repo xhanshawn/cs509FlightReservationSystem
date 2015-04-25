@@ -41,7 +41,7 @@ public class TeamHobbits extends HttpServlet {
 	public void initialize() {
 		System.out.println("initial");
 		DataRetriever.updateLists();
-		DataRetriever.setTime();
+		DataRetriever.setTimeZone();
 	}
     
 	/**
@@ -75,8 +75,9 @@ public class TeamHobbits extends HttpServlet {
 				
 	    	}else{
 	    		
-	    		response.setContentType("text/plain");
-	    		out.write("No Flight!");
+	    		response.setContentType("text/XML");
+	    		
+	    		out.write("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><NoFlight/>");
 	    			
 	    	}
 	    }
@@ -99,7 +100,7 @@ public class TeamHobbits extends HttpServlet {
 	    	ResponseFactory.actionUpdate();
 	    	response.setContentType("test/XML");
 	    	out.flush();
-	    	out.write("Updated!");
+	    	out.write("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><Updated/>");
 	    }
 	    
 	}
