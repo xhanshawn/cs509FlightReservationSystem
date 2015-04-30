@@ -1,0 +1,71 @@
+2015.04.08 4:55 PM 
+
+Unit test for Class Airplane in the package cs509.hobbits.search: 
+
+
+1. testSetModel():
+
+	a. Test Methods included: 
+		Airplane.setModel();
+		Airplane.getModel();
+	
+	b. Function: 
+		Set a specific manufacturer and model of an airplane and get them
+		
+	c. Test Case:
+		
+		I. Description:
+			Set a specific manufacturer and model in the string format of an airplane and get the string of them.
+		
+		II. Goals:
+			Verify if setModel() can set a specific Manufacturer and Model for an instance of Airplane;
+			Verify if getModel() can return a string of Manufacturer and Model of an instance of Airplane regarding the input boolean variable.
+			
+		III. Precondition:
+			Input two Strings standing for Manufacturer name and Model for setModel();
+			
+		IV. Specific inputs and results:
+			
+			Input: "Boeing", "747"
+			
+			Expected result: "Boeing", "747"
+			
+			JUnit test results: Pass 1/1, Failure 0.
+			
+			
+			
+			
+2. testSetSeats():
+
+	a. Test Methods included: 
+		Airplane.setSeats();
+		Airplane.getSeatNumber();
+	
+	b. Function: 
+		Set specific Seat numbers for First class and Coach seat of an airplane and get them
+		
+	c. Test Case:
+		
+		I. Description:
+			Set a specific First class seat number and coach seat number in the int format of an airplane and get them.
+		
+		II. Goals:
+			Verify if setSeats() can set a specific First Class seat number and Coach seat number for an instance of Airplane;
+			Verify if getSeatNumber() can return a int of First Class seat number and Coach seat number of an instance of Airplane regarding the input boolean variable.
+			
+		III. Precondition:
+			Input two ints standing for First Class seat number and Coach seat number for setSeats();
+			Input a boolean variable to get a First Class seat number or Coach seat number ;
+			
+		IV. Specific inputs and results:
+			
+			Input: setSeats(20, 50); getSeatNumber(true); getSeatNumber(false);
+			
+			Expected result: "20", "50"
+			
+			JUnit test results: Pass 1/1, Failure 0.
+
+
+
+
+

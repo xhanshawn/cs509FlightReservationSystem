@@ -1,12 +1,5 @@
 package cs509.hobbits.web;
 
-/**
- * This class is used to response to the request
- * 
- * @author Xu Han 
- * 
- */
-
 import java.util.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -21,14 +14,30 @@ import cs509.hobbits.search.FlightPlan;
 import cs509.hobbits.search.ListToXMLBuilder;
 import cs509.hobbits.search.SearchResults;
 
+/**
+ * @author		Xu Han		<xhan@wpi.edu>
+ * @version		0.5	
+ * @since		2015-04-08	
+ * 
+ * This is a utility to make responses for corresponding HttpServeletRequest
+ * 
+ */
+
 public class ResponseFactory {
 	
+	
+	/* *
+	 * Make responses for searching. Get the required and optional parameters for searching results
+	 * Search Results based on these parameters and build one way or round trip plans and return.
+	 * 
+	 */
 	public static String actionSearch(HttpServletRequest request){
 		
 		boolean round_trip = false;
 		int req_stop;
 		long window;
 		
+		//get parameters
 		String depart = request.getParameter("depart");
 		String arrival = request.getParameter("arrival");
 		String day = request.getParameter("day");
@@ -36,6 +45,7 @@ public class ResponseFactory {
 		String stopover = request.getParameter("stop");
 		String return_day = "";
 		
+		//verify if the value of parameter has the correct format or convert
 		if(depart==null||arrival==null||day==null||stopover==null) return "Error";
 		
 		req_stop = Integer.parseInt(stopover);
@@ -60,12 +70,18 @@ public class ResponseFactory {
 		
 		if(!round_trip||return_day==null){
   			
+			//one way
   			SearchResults search = new SearchResults(depart,arrival,day, req_stop, window);
   			
   			results = search.getPlans();
   		
   		}else{
   			
+  			/* *
+  			 * round trip
+  			 * The way we deployed for building round trip is to get the required depart and return day
+  			 * and search one way results. Then combine one way results to build possible round trip plans
+  			 */
   			if(req_stop>2) return null;
   			
   			SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd HH:mm");
@@ -89,7 +105,8 @@ public class ResponseFactory {
 
   			int count1 = 0;
   			
-  			while(count1<=req_stop){
+  			//depart
+  			while(count1 <= req_stop){
   	  			
   				SearchResults search1 = new SearchResults(depart,arrival,day, count1, window);
   				ArrayList <FlightPlan> result1 = search1.getPlans();
@@ -98,6 +115,7 @@ public class ResponseFactory {
   				count1++;
   			}
   			
+  			//return
   			for(int count2=0; count2< req_stop+1; count2++){
   				
   				SearchResults search2 = new SearchResults(arrival,depart,return_day, count2, window );
@@ -105,6 +123,7 @@ public class ResponseFactory {
   				if(result2!=null) returns.addAll(result2);
   			}
   			
+  			//combine and filter results.
   			for(int i=0; i<departs.size(); i++){
   				
   				int j=0;
@@ -118,7 +137,7 @@ public class ResponseFactory {
   					{
   						
   						temp.buildReturnPlan(departs.get(i), returns.get(j));;
-  						if(temp.checkRoundTrip()) results.add(temp);
+  						if(temp.checkRoundTrip(window)) results.add(temp);
   						
   					}
   					j++;
@@ -132,6 +151,9 @@ public class ResponseFactory {
 		
 	}
 	
+	/* *
+	 * Make responses for all the list actions. System can list either airports lists and airplane lists.
+	 */
 	public static String actionList(HttpServletRequest request){
 	
 		String list_type = request.getParameter("list_type");
@@ -151,6 +173,10 @@ public class ResponseFactory {
 		return null;
 	}
 	
+	
+	/* *
+	 * Make responses for update action which is for developer and administrator 
+	 */
 	public static void actionUpdate(){
 		
 		DataRetriever.updateLists(); 

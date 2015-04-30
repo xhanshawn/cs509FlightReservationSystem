@@ -1,0 +1,417 @@
+2015.04.07 5:01 PM 
+
+Unit test for Class Airport in the package cs509.hobbits.search: 
+
+
+
+1. testSetCode():
+
+	a. Test Methods included: 
+		Airport.setCodeAndName();
+		Airport.getCode();
+		Airport.getName();
+	
+	b. Function: 
+		Set a specific code and name of an airport and get them
+		
+	c. Test Case:
+		
+		I. Description:
+			Set a specific code and name in the string format of an airport and get the string of them.
+		
+		II. Goals:
+			Verify if setCodeAndName() can set a specific code and name for an instance of Airport;
+			Verify if getCode() and getName() can return a string of airport code and name of an instance of Airport.
+			
+		III. Precondition:
+			Input two Strings standing for Airport Code and Name for setCodeAndName();
+			
+		IV. Specific inputs and results:
+			
+			Input: "BOS", "Boston logan airport"
+			
+			Expected result: getCode(): "BOS", getName(): "Boston logan airport"
+			
+			JUnit test results: Pass 2/2, Failure 0.
+			
+			
+1. testSetLocation():
+
+	a. Test Methods included: 
+		Airport.setLocation();
+		Airport.getLatitude();
+		Airport.getLongitude();
+	
+	b. Function: 
+		Set a specific latitude and longitude value of an airport and get them
+		
+	c. Test Case:
+		
+		I. Description:
+			Set a specific latitude and longitude value in the float format of an airport and get them.
+		
+		II. Goals:
+			Verify if setLocatioin() can set a specific latitude and longitude value for an instance of Airport;
+			Verify if getLatitude() and getLongitude() can return a float variable of airport latitude and longitude of an instance of Airport.
+			
+		III. Precondition:
+			Input two float variables standing for Airport latitude and longitude value for setLocation();
+			
+		IV. Specific inputs and results:
+			
+			Input: setLocation(40.32f, -75.30f);
+			
+			Expected result: getLatitude(): 40.32f, getLongitude(): -75.30f
+			
+			JUnit test results: Pass 0/2, Failure 2.
+			
+			Failure trace:
+			
+				testSetLocation(cs509.hobbits.search.AirportTest)
+				java.lang.AssertionError: Use assertEquals(expected, actual, delta) to compare floating-point numbers
+					at org.junit.Assert.fail(Assert.java:88)
+					at org.junit.Assert.assertEquals(Assert.java:576)
+					at org.junit.Assert.assertEquals(Assert.java:565)
+					at cs509.hobbits.search.AirportTest.testSetLocation(AirportTest.java:22)
+					at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+					at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+					at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+					at java.lang.reflect.Method.invoke(Method.java:483)
+					at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:47)
+					at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+					at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:44)
+					at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+					at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:271)
+					at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:70)
+					at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:50)
+					at org.junit.runners.ParentRunner$3.run(ParentRunner.java:238)
+					at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:63)
+					at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:236)
+					at org.junit.runners.ParentRunner.access$000(ParentRunner.java:53)
+					at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:229)
+					at org.junit.runners.ParentRunner.run(ParentRunner.java:309)
+					at org.eclipse.jdt.internal.junit4.runner.JUnit4TestReference.run(JUnit4TestReference.java:50)
+					at org.eclipse.jdt.internal.junit.runner.TestExecution.run(TestExecution.java:38)
+					at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:459)
+					at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:675)
+					at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.run(RemoteTestRunner.java:382)
+					at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.main(RemoteTestRunner.java:192)
+
+
+				cause: Test format is not correct for float numbers. It is solved by adding delta value.
+				
+			
+			
+			
+2. testSetTimeZone():
+
+	a. Test Methods included: 
+		Airport.setTimeZone();
+		Airport.getTimeZone();
+		Airport.getOffset();
+		Airport.dstIsUsed();
+	
+	b. Function: 
+		Retrieve Time zone information from remote API and set it to corresponding instance of Airport.
+		Get the offset time, Time Zone and if dst is used information of the instance.
+		
+	c. Test Case:
+		
+		I. Description:
+			Retrieve Time zone information from remote Google Map API and set it to corresponding instance of Airport.
+			Get the offset time in the long variable format, Time Zone in the String format and if dst is used in the boolean variable of the instance.
+		
+		II. Goals:
+			Verify if setTimeZone() can set specific Time zone information value for an instance of Airport;
+			Verify if getOffset() can return a long variable of an instance of Airport.
+			Verify if getTimeZone() can return a Time Zone name in a String variable of an instance of Airport.
+			Verify if dstIsUsed() can return a boolean variable if DST is used of an instance of Airport.
+			
+			
+		III. Precondition:
+			Internet is working
+			Location information is set for an airport
+			
+		IV. Specific inputs and results:
+			
+			caseEDT:
+			
+				Input: 40.641518f, -73.77816f
+			
+				Expected result: 
+			
+				Time zone: "EDT"
+				Offset: -14400l
+				DST: true
+			
+			caseCDT:
+			
+				Input: 35.042343f, -89.97922f
+			
+				Expected result: 
+			
+				Time zone: "CDT"
+				Offset: -18000l
+				DST: true
+			
+			caseMDT:
+			
+				Input: 39.866373f, -104.67377f
+			
+				Expected result: 
+			
+				Time zone: "MDT"
+				Offset: -21600l
+				DST: true
+				
+			casePDT:
+			
+				Input: 33.94443f, -118.408356f
+			
+				Expected result: 
+			
+				Time zone: "MDT"
+				Offset: -25200l
+				DST: true
+				
+			caseAKDT:
+			
+				Input: 61.176033f, -149.99008f
+			
+				Expected result: 
+			
+				Time zone: "AKDT"
+				Offset: -28800l
+				DST: true
+				
+				
+			caseHST:
+			
+				Input: 21.324808f, -157.92519f
+			
+				Expected result: 
+			
+				Time zone: "HST"
+				Offset: -36000l
+				DST: false
+			
+			caseMST:
+			
+				Input: 33.43755f, -112.0078f
+			
+				Expected result: 
+			
+				Time zone: "MST"
+				Offset: -25200l
+				DST: false
+			
+			JUnit test results: Pass 0/6, Failure 6.
+			
+			Failure trace:
+
+			AirportTest
+			cs509.hobbits.search.AirportTest
+			java.lang.AssertionError: expected:<EDT> but was:<null>
+				at org.junit.Assert.fail(Assert.java:88)
+				at org.junit.Assert.failNotEquals(Assert.java:743)
+				at org.junit.Assert.assertEquals(Assert.java:118)
+				at org.junit.Assert.assertEquals(Assert.java:144)
+				at cs509.hobbits.search.AirportTest.testSetTimeZone(AirportTest.java:25)
+				at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+				at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+				at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+				at java.lang.reflect.Method.invoke(Method.java:483)
+				at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:47)
+				at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+				at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:44)
+				at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+				at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:271)
+				at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:70)
+				at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:50)
+				at org.junit.runners.ParentRunner$3.run(ParentRunner.java:238)
+				at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:63)
+				at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:236)
+				at org.junit.runners.ParentRunner.access$000(ParentRunner.java:53)
+				at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:229)
+				at org.junit.runners.ParentRunner.run(ParentRunner.java:309)
+				at org.eclipse.jdt.internal.junit4.runner.JUnit4TestReference.run(JUnit4TestReference.java:50)
+				at org.eclipse.jdt.internal.junit.runner.TestExecution.run(TestExecution.java:38)
+				at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:459)
+				at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:675)
+				at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.run(RemoteTestRunner.java:382)
+				at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.main(RemoteTestRunner.java:192)
+
+			Cause: Google API over_query_limit. This can also cause deadlock.
+
+				errorMessage from Google API:
+				{
+				   "errorMessage" : "You have exceeded your daily request quota for this API.",
+				   "status" : "OVER_QUERY_LIMIT"
+				}
+	
+			Solution: Change API to timezonedb. 
+
+			
+3. testGetDirection():
+
+	a. Test Methods included: 
+		Airport.getDirection();
+	
+	b. Function: 
+		Get the main direction from one airport to the other.
+		
+	c. Test Case:
+		
+		I. Description:
+			Set a specific latitude and longitude value in the float format for each of two instances of airport.
+			Get the main direction between the two airports
+		
+		II. Goals:
+			Verify if getDirection() can get the main direction from one airport to the other.
+			
+		III. Precondition:
+			Input two float variables standing for Airport latitude and longitude value for setLocation();
+			
+		IV. Specific inputs and results:
+			
+			case1: Horizontal
+			
+			Input: 
+				Airport1: setLocation(50.00f, -70.00f);
+				Airport2: setLocation(30.00f, -120.00f);
+				
+			Expected result: 
+				Direction: True
+			
+			
+			case2: Vertical
+			
+			Input: 
+				Airport1: setLocation(50.00f, -70.00f);
+				Airport2: setLocation(20.00f, -80.00f);
+				
+			Expected result: 
+				Direction: False
+			
+			
+			case3: Boundary case of accurancy
+			
+			Input: 
+				Airport1: setLocation(61.176033f, -149.99008f);
+				Airport2: setLocation(42.365856f, -71.00962f);
+				
+			Expected result: 
+				Direction: True
+			
+			
+			
+			JUnit test results: Pass 3/3, Failure 0.
+
+
+4. testIsLayover():
+
+	a. Test Methods included: 
+		Airport.isLayover();
+	
+	b. Function: 
+		Check if an airport is a possible airport between two airports
+		
+	c. Test Case:
+		
+		I. Description:
+			Set three pairs of location information for three airports
+			Check if an airport is a possible airport between two airports
+			
+		
+		II. Goals:
+			Verify if isLayover() can check if an airport is a possible airport between two airports.
+			
+		III. Precondition:
+			Input two float variables standing for Airport latitude and longitude value for setLocation();
+			
+		IV. Specific inputs and results:
+			
+			case1: Horizontal
+			
+			Input: 
+				Airport1: setLocation(50.00f, -70.00f);
+				Airport2: setLocation(30.00f, -120.00f);
+				Airport3: setLocation(10.00f, -100.00f);
+				
+			Expected result: 
+				Direction: True
+			
+
+			case2: Vertical
+			
+			Input: 
+				Airport1: setLocation(50.00f, -70.00f);
+				Airport2: setLocation(30.00f, -120.00f);
+				Airport3: setLocation(40.00f, -90.00f);
+				
+			Expected result: 
+				Direction: True
+			
+			case3: Edge case
+			
+			Input: 
+				Airport1: setLocation(50.00f, -70.00f);
+				Airport2: setLocation(20.00f, -100.00f);
+				Airport3: setLocation(40.00f, -90.00f);
+				
+			Expected result: 
+				Direction: True
+			
+			
+			case4: Not a layover
+			
+			Input: 
+				Airport1: setLocation(50.00f, -70.00f);
+				Airport2: setLocation(30.00f, -110.00f);
+				Airport3: setLocation(35.00f, -75.00f);
+				
+			Expected result: 
+				Direction: False
+			
+			
+			
+			JUnit test results: Pass 3/4, Failure 1/4.
+			
+			Failure trace:
+			
+			testIsLayover(cs509.hobbits.search.AirportTest)
+			java.lang.AssertionError
+				at org.junit.Assert.fail(Assert.java:86)
+				at org.junit.Assert.assertTrue(Assert.java:41)
+				at org.junit.Assert.assertTrue(Assert.java:52)
+				at cs509.hobbits.search.AirportTest.testIsLayover(AirportTest.java:76)
+				at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+				at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+				at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+				at java.lang.reflect.Method.invoke(Method.java:483)
+				at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:47)
+				at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+				at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:44)
+				at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+				at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:271)
+				at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:70)
+				at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:50)
+				at org.junit.runners.ParentRunner$3.run(ParentRunner.java:238)
+				at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:63)
+				at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:236)
+				at org.junit.runners.ParentRunner.access$000(ParentRunner.java:53)
+				at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:229)
+				at org.junit.runners.ParentRunner.run(ParentRunner.java:309)
+				at org.eclipse.jdt.internal.junit4.runner.JUnit4TestReference.run(JUnit4TestReference.java:50)
+				at org.eclipse.jdt.internal.junit.runner.TestExecution.run(TestExecution.java:38)
+				at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:459)
+				at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:675)
+				at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.run(RemoteTestRunner.java:382)
+				at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.main(RemoteTestRunner.java:192)
+
+			causes: Expected test input examples is not correct. This failure is solved after modifying.
+
+
+
+			
+

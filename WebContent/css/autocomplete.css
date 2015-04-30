@@ -1,0 +1,39 @@
+.ui-autocomplete {
+	position: absolute;
+	top: 0;
+	left: 0;
+	cursor: default;
+	width: 500px;
+	font: red;
+}
+.ui-autocomplete-input {
+	width: 200px;
+	height: 25px;
+}
+
+.ui-menu-item{
+	font: 18px Tahoma;
+	height: 25px;
+	background: #FFFFFF;
+}
+
+.ui-menu-item:active{
+	font: 18px Tahoma;
+	height: 25px;
+	background: #FFFFFF;
+}
+
+.ui-menu-item:hover{
+	
+	background: #D0E7FF;
+	border:0px;
+	color:black;
+	
+}
+
+
+#autocomplete{
+	font: 18px Tahoma;
+
+	
+}

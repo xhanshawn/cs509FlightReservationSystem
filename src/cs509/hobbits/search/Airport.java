@@ -1,12 +1,5 @@
 package cs509.hobbits.search;
 
-/**
- * This is the class to generalize Airports
- * 
- * @author Xu Han 
- * 
- */
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,43 +10,65 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-
 import org.json.JSONException;
 import org.json.JSONObject;
+
+/**
+ * @author		Xu Han		<xhan@wpi.edu>
+ * @version		0.5	
+ * @since		2015-04-08	
+ * 
+ * This is the class to generalize Airports, set attributes of airport and
+ * do some logical judgment based on the inner attributes
+ * 
+ */
 
 
 public class Airport {
 	
+	/* *
+	 * This float is used for checking if the an airport is a possible lay over airport
+	 * It is the distance ratio
+	 */
 	final private float PERCENTAGE = 0.30f; 
 	
-	
+	/* *
+	 * Attributes name and code for an airport
+	 */
 	private String code;
 	private String name;
-	private String time_zone;
 	
+	/* *
+	 * Location attributes for an airport
+	 */
 	private float latitude;
 	private float longitude;
 
+	/* *
+	 * Time zone attributes for an airport
+	 */
+	private String time_zone;
 	private long offset;
 	private int dst;
+	private boolean timezone_retrieved;
 	
 	public Airport(){
 		
-		code = "";
-		name = "";
+		code =null;
+		name = null;
 		latitude = 0.0f;
 		longitude = 0.0f;
+		offset = 0l;
 		dst = 0;
+		timezone_retrieved = false;
 		
 	}
 	
-	/*
-	 * Setters and getters 
-	 */
 	public void setCodeAndName(String _code, String _name){
 		
-		code = _code;
-		name = _name;
+		//singleton
+		if(code==null) code = _code;
+		if(name==null) name = _name;
 	
 	}
 
@@ -64,7 +79,13 @@ public class Airport {
 		
 	}
 	
-	//this setter is only called when initialization and update airport lists and time zone information
+	
+
+	/* *
+	 * This setter is only called when initialization and update airport lists 
+	 * and time zone information. It is used for update time zone information
+	 * @param obj, it is the JSONObject retrieved from the API
+	 */
 	public void setTimeZone(){
 		
 		JSONObject obj = retrieveTimeZone();
@@ -74,6 +95,7 @@ public class Airport {
 			time_zone = obj.getString("abbreviation");
 			offset = obj.getLong("gmtOffset");
 			dst =  obj.getInt("dst");
+			timezone_retrieved = true;
 			
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
@@ -82,10 +104,15 @@ public class Airport {
 		
 	}
 	
-	//this method is used to retrieve Time Zone informations from API provided by timezoneDB
-	//the default time is "2015 05 10 12:00 GMT". The DST is assumed
+	/* *
+	 * This method is used to retrieve Time Zone informations by 
+	 * using HTTP GETfrom API provided by timezoneDB.
+	 * 
+	 * The default time is "2015 05 10 12:00 GMT". DST is assumed
+	 */
 	private JSONObject retrieveTimeZone(){
 		
+		//This part is for parsing sample date in string to an instance of date
 		String sample_date = "2015 05 10 12:00 GMT";
 		SimpleDateFormat date_format = new SimpleDateFormat("yyyy MM dd HH:mm z",Locale.ENGLISH);
 		
@@ -100,6 +127,7 @@ public class Airport {
 			e.printStackTrace();
 		}
 		
+		//This part is for generating url string
 		String location = this.getLatitude() + "&lng=" + this.getLongitude();
 		
 		JSONObject obj = null;
@@ -109,6 +137,7 @@ public class Airport {
 		
 		try {
 			
+			//Try to retrieve data by using HTTP GET
 			URL u = new URL(url);
 			HttpURLConnection connection = (HttpURLConnection) u.openConnection();
 			connection.setRequestMethod("GET");
@@ -132,56 +161,45 @@ public class Airport {
 				
 				if(obj.has("errorMessage")||!obj.getString("status").equals("OK"))
 					{
-						try{
-							Thread.sleep(2000);
 						
-						}
-						catch(Exception ex){
-							ex.printStackTrace();
-						}
-					
-						retrieveTimeZone();
-						
+						// handle the case if API is has error like over query
+						throw new JSONException(obj.getString("status"));
 					}
-				
 			}
-			
 		} catch ( IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			try {
-				System.out.println(obj.getString("status"));
-			} catch (JSONException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			
 		}
 		
 		return obj;
-		
 	}
 	
+	
+	/* *
+	 * if time zone is retrieved return offset directly
+	 */
 	public long getOffset(){
 		
-		if(offset!=0) return offset;
-		else {
+		if(timezone_retrieved) return offset;
+		else{ 
+			
 			setTimeZone();
-			return offset;	
-		}
-		
+			return offset;
+		}	
 	}
 	
 	public boolean dstIsUsed(){
 		
-		if(dst==1) return true;
-		else return false;
-	
+		if(timezone_retrieved) return (dst==1) ? true : false;
+		else{ 
+			
+			setTimeZone();
+			return (dst==1) ? true : false;
+		}	
 	}
-	
 	
 	public String getCode(){
 		
@@ -194,6 +212,7 @@ public class Airport {
 		return latitude;
 		
 	}
+	
 	public float getLongitude(){
 		
 		return longitude;
@@ -206,30 +225,47 @@ public class Airport {
 		
 	}
 	
-	//This method is to get the main direction of the flight requirements
-	//eithber be in the longitude direction or in the latitude direction
+	public String getAirportName(){
+		
+		return name;
+	}
+
+	/* *
+	 * This method is to get the main direction of depart airport and arrival airport.
+	 * It is either in the longitude direction or in the latitude direction.
+	 * If longitude difference is larger, it is the longitude direction
+	 * if latitude difference is larger, it is the latitude direction
+	 */
 	public boolean getDirection(Airport _arrival){
 		
 		float lat_dis = Math.abs( this.getLatitude() - _arrival.getLatitude());
 		float longi_dis = Math.abs( this.getLongitude() - _arrival.getLongitude());
 		
-		
 		if(lat_dis>longi_dis){
 			
 			return false;	
-			
 		}else{
+			
 			return true;
 		}
 
 	}
 	
-	public String getAirportName(){
-		
-		return name;
-		
-	}
-	
+	/* *
+	 * This method is to check if this airport is a possible lay over airport between
+	 * _depart airport and _arrival airport. 
+	 * 
+	 * First, if the distance between this airport and _depart airport is larger than 
+	 * the distance between _depart airport and _arrival airport, then it will not be
+	 * viewed as a possible lay over airport.
+	 * 
+	 * Second, if the main direction distance(Longitude or Latitude) between this airport
+	 * and _depart airport is larger than a ratio of the main direction difference between
+	 * _depart and _arrival airport, it will be viewed as a possible lay over airport.
+	 * 
+	 * The ratio is the parameter PERCENTAGE. I will be changed be the trade-off between
+	 * Time efficiency and number of results or the requirements of user. 
+	 */
 	public boolean isLayover(Airport _depart, Airport _arrival){
 		
 		boolean direction = _depart.getDirection(_arrival);
@@ -248,8 +284,6 @@ public class Airport {
 			Math.abs(PERCENTAGE*_arrival.getLongitude() - PERCENTAGE*_depart.getLongitude())){
 				return true;
 			}
-			
-			
 		}else{
 			
 			if(Math.abs(this.getLatitude() - _depart.getLatitude()) > 
@@ -259,7 +293,6 @@ public class Airport {
 		}
 		
 		return false;
-		
 	}
-	
+
 }

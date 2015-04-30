@@ -1,12 +1,5 @@
 package cs509.hobbits.search;
 
-/**
- * This is the class to retrieve date from server
- * 
- * @author Xu Han 
- * 
- */
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -14,9 +7,7 @@ import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -29,6 +20,15 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+/**
+ * @author		Xu Han		<xhan@wpi.edu>
+ * @version		0.5	
+ * @since		2015-04-08	
+ * 
+ * This is the Utility class to retrieve date from server including airport list, airplane list
+ * and flight lists. Also, updating list preserved in the system is provided.
+ */
+
 public class DataRetriever {
 	
 	final private static String DEPART = "departing";
@@ -37,11 +37,7 @@ public class DataRetriever {
 	final private static int AIRPORTS = 1;
 	final private static int AIRPLANES = 2;
 	final private static int DEP_FLIGHT = 3;
-	final private static int ARR_FLIGHT = 4;
-
-	final private boolean FIRST = true;
-	final private boolean COACH = false;
-	
+	final private static int ARR_FLIGHT = 4;	
 	
 	private static Map<String, Airplane> Airplane_list = new HashMap<String, Airplane>();
 	private static Map<String, Airport> Airport_list = new HashMap<String, Airport>();
@@ -54,26 +50,14 @@ public class DataRetriever {
 	
 	public DataRetriever(){
 		
-		updateAirplaneList();
 		updateAirportList();
 		
 	}
 	
-	private static void updateAirplaneList(){
-		
-		if(Airplane_list.isEmpty())	 {
-			
-			ArrayList<Airplane> airplanes = new ArrayList<Airplane>();
-			airplanes = getAirplaneList();
-			
-			for(int i=0; i< airplanes.size(); i++){
-				
-				Airplane_list.put(airplanes.get(i).getModel(), airplanes.get(i));
-				
-			}
-		}
-	}
 	
+	/* *
+	 * This method is used as a utility to update the airport list in the system.
+	 */
 	private static void updateAirportList(){
 		
 		if(Airport_list.isEmpty()){
@@ -91,12 +75,13 @@ public class DataRetriever {
 		
 		Airport_list.clear();
 		Airplane_list.clear();
-		updateAirplaneList();
 		updateAirportList();
 		setTimeZone();
 		
 	}
-	
+	/* *
+	 *  Time zone information has been updated from remote API and matched with regarding airports
+	 */
 	public static void setTimeZone(){
 		
 		if(!Airport_list.isEmpty()){
@@ -111,7 +96,7 @@ public class DataRetriever {
 	
 	
 	
-	/*
+	/* *
 	 * This method is used to retrieve the data stream from server
 	 */
 	private static InputStream getStream ( int list_type){
@@ -161,7 +146,7 @@ public class DataRetriever {
 	
 	
 	
-	/*
+	/* *
 	 * This method is to get airport list from the server 
 	 */
 	public static ArrayList<Airport> getAirportList() {
@@ -217,7 +202,7 @@ public class DataRetriever {
 	
 	
 	
-	/*
+	/* *
 	 * This method is to get Airplane list from the server
 	 */
 	
@@ -324,7 +309,7 @@ public class DataRetriever {
 		
 			String airplane = ((Element)list.item(i)).getAttribute("Airplane");
 			int Time = Integer.parseInt(((Element)list.item(i)).getAttribute("FlightTime"));
-			int Number = Integer.parseInt(((Element)list.item(i)).getAttribute("Number"));
+			String Number = ((Element)list.item(i)).getAttribute("Number");
 			
 			NodeList detail = list.item(i).getChildNodes();
 		
@@ -346,10 +331,14 @@ public class DataRetriever {
 			
 			Flight flight = new Flight();
 		
-			
-			flight.setPlane(this.Airplane_list.get(airplane));
+			flight.setPlane(airplane);
 			flight.setSeats(first_class_seat,  coach_seat);
 			flight.setNumber(Number);
+			
+			/*Reason for query instances of airport is because it will not cost a lot
+			 *for a hash table. So this way can make codes concise and only use the airport
+			 *list was retrieved
+			 */
 			flight.setAirports(Airport_list.get(dep_code), Airport_list.get(arr_code));
 			flight.setFlightTime(Time);
 			flight.setDATime(dep_time, arr_time);

@@ -9,11 +9,14 @@ import cs509.hobbits.search.Airplane;
 public class AirplaneTest {
 
 	
-
 	@Test
 	public void testSetModel() {
 		Airplane airplane = new Airplane();
+		assertEquals("", airplane.getManufacturer());
+		assertEquals("", airplane.getModel());
+
 		airplane.setModel("Boing", "747");
+		
 		assertEquals("Boing", airplane.getManufacturer());
 		assertEquals("747", airplane.getModel());
 	}
@@ -22,11 +25,8 @@ public class AirplaneTest {
 	public void testSetSeats() {
 		Airplane airplane = new Airplane();
 		airplane.setSeats(20, 50);
+		
 		assertEquals(20, airplane.getSeatNumber(true));
 		assertEquals(50, airplane.getSeatNumber(false));
-		
 	}
-
-	
-
 }

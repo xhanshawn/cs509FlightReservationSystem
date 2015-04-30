@@ -98,13 +98,13 @@ public class DataRetrieverTest {
 			if(!current.getCode(true).equals("HOU")) hou = false;
 			if(!current.getGMTDateCode(true).equals("2015_05_13")) dep_date_code = false;
 			
-			if(current.getNumber()==8045&&current.getFlightTime()==137
+			if(current.getNumber()=="8045"&&current.getFlightTime()==137
 					&&current.getAirplane().getModel().equals("A320")) flight_eg++;
 			
-			if(current.getNumber()==8036&&current.getSeat(true)==A380_first - 45) flight_eg_first++;
-			if(current.getNumber()==8036&&current.getSeat(false)==A380_coach - 131) flight_eg_coach++;
+			if(current.getNumber()=="8036"&&current.getSeat(true)==A380_first - 45) flight_eg_first++;
+			if(current.getNumber()=="8036"&&current.getSeat(false)==A380_coach - 131) flight_eg_coach++;
 			if(current.getPrice(true)==3059.44f&&current.getPrice(false)==856.64f) flight_eg_price++;
-			if(current.getNumber()==8032) {
+			if(current.getNumber()=="8032") {
 				dep_date = current.getDAOffsetString(true);
 				arr_date = current.getDAOffsetString(false);
 			}

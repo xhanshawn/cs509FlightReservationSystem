@@ -6,8 +6,10 @@ package cs509.hobbits.search;
  * 
  */
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
 
@@ -23,6 +25,7 @@ public class LocalTime extends Date {
 	private static final long serialVersionUID = -7069728987148131849L;
 
 	public LocalTime(){
+		
 		offset_time_str = null;
 	}
 	
@@ -35,7 +38,7 @@ public class LocalTime extends Date {
 		
 			Date da = new Date();
 			da.setTime(this.getTime() + offset*1000);
-		
+
 			long dst_offset = 0;
 		
 			if(airport.dstIsUsed()) dst_offset = getDSTOffset(da);
@@ -49,9 +52,9 @@ public class LocalTime extends Date {
 	
 	public static long getDSTOffset(Date da){
 		
-		SimpleDateFormat date_format = new SimpleDateFormat("E yyyy MM dd HH:mm z");
+		SimpleDateFormat date_format = new SimpleDateFormat("E yyyy MM dd HH:mm");
 		date_format.setTimeZone(TimeZone.getTimeZone("GMT"));
-		
+	
 		String formated_time = date_format.format(da);
 		String [] strs = formated_time.split(" ");
 		String sun = strs[0];
@@ -59,10 +62,10 @@ public class LocalTime extends Date {
 		int month = Integer.parseInt(strs[2]);
 		int day = Integer.parseInt(strs[3]);
 		int hour = Integer.parseInt(strs[4].substring(0,2));
-		
+
 		if(month >4 && month <11) return 0;
 		
-		if(month == 3 && day>7 && sun.equals("Sun") &&hour>2){
+		if(month == 3 && day>7 && sun.equals("Sun") &&hour>=2){
 			return 0;
 		}
 		
@@ -83,6 +86,23 @@ public class LocalTime extends Date {
 		
 		return strs[0];
 		
+	}
+	
+	public static LocalTime parseStringToLocalTime(String lc_str){
+		
+		SimpleDateFormat date_format = new SimpleDateFormat("yyyy MMM dd HH:mm z",Locale.ENGLISH);
+		LocalTime parsed_lc = new LocalTime();
+		
+		try {
+			
+			Date da = date_format.parse(lc_str);
+			parsed_lc.setTime(da.getTime());
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return parsed_lc;
 	}
 	
 }

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+
+<html lang="en-US">
+
+<head>
+	<meta charset="utf-8"  >
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script>
+	
+	function queryDB(){
+		
+		var date_code = $('#date-code').val();
+		var airport = $('airport').val();
+		var url = "http://cs509.cs.wpi.edu:8181/CS509.server/ReservationSystem?team=Team08&action=list&list_type=departing&airport=LAX&day=2015_05_" + date_code;
+		
+		window.open(url);
+		
+	}
+	</script>
+	
+</head>
+
+
+
+
+<body>
+	airport<input type="text" id="airport"></input>
+	date:<input type="text" id="date-code"></input>
+	<button onclick=queryDB()>query</button>
+	<br>
+	<br>
+	<a href="http://cs509.cs.wpi.edu:8181/CS509.server/ReservationSystem?team=Team08&action=resetDB">RESET DB!</a>
+	
+	<br>
+	<br>
+	<a href="http://default-environment-kmx2ref3wn.elasticbeanstalk.com/HobbitsFlight?AccessKey=TeamHobbits&&action=update">Update Lists!</a>
+
+	
+</body>
+
+
+
+
+
+</html>

@@ -1,12 +1,5 @@
 package cs509.hobbits.search;
 
-/**
- * This class is used to build xml
- * 
- * @author Xu Han 
- * 
- */
-
 import java.io.StringWriter;
 import java.util.ArrayList;
 
@@ -24,20 +17,37 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
 
+/**
+ * @author		Xu Han		<xhan@wpi.edu>
+ * @version		0.5	
+ * @since		2015-04-08	
+ * 
+ * This is the class to generalize Airports, set attributes of airport and
+ * do some logical judgment based on the inner attributes
+ */
+
 public class ListToXMLBuilder {
 	
 	private static Document mDoc = null;
-
 	
+	
+	/* *
+	 * This is used for building XML file for communicating with front end based on the input flight plans
+	 * plans may either be one way trip or round trip
+	 * The whole bench flow is separately builded, because of the common part round trip and one way trip and 
+	 * the difference between them.
+	 */
 	public static String buildPlanXML(ArrayList<FlightPlan> results, boolean round_trip){
 	
 		
 		Element mRootNode = null;
 		
 		try{
+			
   			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
   			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
   			
+  			//root 
   			mDoc = docBuilder.newDocument(); 
   			mDoc.setXmlVersion("1.0");
   			mDoc.setXmlStandalone(false);
@@ -48,13 +58,13 @@ public class ListToXMLBuilder {
   			
   			e.printStackTrace();
   			mDoc = null;
-  			
   		}
   		
   		Element elementFP;
   		
   		Attr attr;
-
+  		
+  		//Each FlightPlan
   		for (int i=0; i<results.size(); i++){
   			
   			elementFP = mDoc.createElement("FlightPlan");
@@ -76,6 +86,7 @@ public class ListToXMLBuilder {
   			Element elementDepart = null;
   			Element elementReturn = null;
   			
+  			//Handle the round trip situation
   			if(results.get(i).isRoundTrip()&&round_trip){
   				
   				elementDepart = mDoc.createElement("Depart");
@@ -113,6 +124,9 @@ public class ListToXMLBuilder {
   		
 	}
 	
+	/* *
+	 * This is used for append children for a certain root element
+	 */
 	private static void appendChildren(Element parent, ArrayList<Element> elements){
 		
 		for(int i=0; i<elements.size(); i++){
@@ -121,7 +135,9 @@ public class ListToXMLBuilder {
 		
 	}
 	
-	
+	/* *
+	 * Build inner structure of a Flight plan
+	 */
 	private static ArrayList<Element> buildPlan(ArrayList<Flight> _plan){
 		
 		Attr attr;
@@ -202,6 +218,9 @@ public class ListToXMLBuilder {
 		return elements;
 	}
 	
+	/* *
+	 * Build XML for airports list
+	 */
 	public static String buildAirportsXML(ArrayList<Airport> airports){
 		
 		Element mRootNode = null;
@@ -227,9 +246,10 @@ public class ListToXMLBuilder {
   		Element elementA;
   		
   		Attr attr;
-
+  		
   		for (int i=0; i<airports.size(); i++){
   			
+  			//Inner children and attributes of an airport
   			elementA = mDoc.createElement("Airport");
   			mRootNode.appendChild(elementA);
   			
@@ -270,6 +290,9 @@ public class ListToXMLBuilder {
 		
 	}
 	
+	/* *
+	 * Build XML for airplanes list
+	 */
 	public static String buildAirplanesXML(ArrayList<Airplane> airplanes){
 		
 		Element mRootNode = null;
