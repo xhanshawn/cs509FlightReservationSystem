@@ -18,8 +18,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Text;
 
 /**
- * @author		Xu Han		<xhan@wpi.edu>
- * @version		0.5	
+ * @author		Xu Han		xhan@wpi.edu
+ * @version		1.17	
  * @since		2015-04-08	
  * 
  * This is the class to generalize Airports, set attributes of airport and

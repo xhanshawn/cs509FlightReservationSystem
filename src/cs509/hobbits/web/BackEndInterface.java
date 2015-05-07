@@ -1,11 +1,6 @@
 package cs509.hobbits.web;
 
-/**
- * This class is main class to communicate with the front end
- * 
- * @author Xu Han 
- * 
- */
+
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -22,24 +17,32 @@ import cs509.hobbits.search.DataRetriever;
 
 
 /**
- * Servlet implementation class TeamHobbits
+ * @author		Xu Han		xhan@wpi.edu
+ * @version		1.17	
+ * @since		2015-04-08	
+ * 
+ * This is the class are used to interact with front end.
+ * The main interface in the contract programming
+ * The interface of the controller inside the MVC Model
  */
+
 @WebServlet("/HobbitsFlight")
 public class BackEndInterface extends HttpServlet {
 	
 	
 	
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 8419071157430367156L;
-	private static final double VersionUID = 0.42d;
+	private static final double VersionUID = 1.17d;
 	
 	
-	
+	/* *
+	 * This is used to update time zone information initially. 
+	 * The developer and administrator need to update after the airport list changed in the server
+	 */
 	@PostConstruct
 	public void initialize() {
-		System.out.println("initial");
+		
 		DataRetriever.updateLists();
 		DataRetriever.setTimeZone();
 	}
@@ -50,6 +53,7 @@ public class BackEndInterface extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		
+		//need to set header to use AJax
 		response.setHeader("Access-Control-Allow-Origin", "*");
 	    PrintWriter out = response.getWriter();
 	    
@@ -58,6 +62,7 @@ public class BackEndInterface extends HttpServlet {
 	    
 	    if(!access_key.equals("TeamHobbits")) response.sendError(407, "Wrong access key, you don't have the access authorization");
 	    
+	    //response search request
 	    if(action.equals("Search")) {
 	    	
 	    	String res = "";
@@ -82,6 +87,7 @@ public class BackEndInterface extends HttpServlet {
 	    	}
 	    }
 	   
+	    //response search request
 	    if(action.equals("List")) {
 	    	
 	    	String res = "";
@@ -95,6 +101,8 @@ public class BackEndInterface extends HttpServlet {
     		
 			
 	    }
+	    
+	    //response update request
 	    if(action.equals("update")) {
 	    	
 	    	ResponseFactory.actionUpdate();
@@ -103,14 +111,6 @@ public class BackEndInterface extends HttpServlet {
 	    	out.write("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><Updated/>");
 	    }
 	    
-	}
-	  	
-	
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 	}
 
 }

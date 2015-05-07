@@ -11,6 +11,12 @@ import cs509.hobbits.search.Flight;
 import cs509.hobbits.search.FlightPlan;
 import cs509.hobbits.search.SearchResults;
 
+/**
+ * @author		Xu Han     xhan@wpi.edu		
+ * @version		1.17	
+ * @since		2015-04-08	 
+ */
+
 public class SearchResultsTest {
 
 	@Test

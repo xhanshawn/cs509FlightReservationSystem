@@ -11,6 +11,12 @@ import cs509.hobbits.search.Airport;
 import cs509.hobbits.search.DataRetriever;
 import cs509.hobbits.search.Flight;
 
+/**
+ * @author		Xu Han     xhan@wpi.edu		
+ * @version		1.17	
+ * @since		2015-04-08	 
+ */
+
 public class DataRetrieverTest {
 
 	
@@ -30,7 +36,7 @@ public class DataRetrieverTest {
 			
 			if(current.getCode().equals("FLL")) code += 1;
 			if(current.getAirportName().equals("Minneapolis/St. Paul International")) common+=1;
-			if(current.getAirportName().equals("Mineta San José International")) edge_name+=1;
+			if(current.getAirportName().equals("Mineta San Jos? International")) edge_name+=1;
 			if(current.getLatitude()==21.324808f&&current.getLongitude()==-157.92519f) location= true;
 
 		}

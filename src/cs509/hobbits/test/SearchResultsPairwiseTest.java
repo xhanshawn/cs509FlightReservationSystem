@@ -10,6 +10,12 @@ import cs509.hobbits.search.Airport;
 import cs509.hobbits.search.DataRetriever;
 import cs509.hobbits.search.SearchResults;
 
+/**
+ * @author		Xu Han     xhan@wpi.edu		
+ * @version		1.17	
+ * @since		2015-04-08	 
+ */
+
 public class SearchResultsPairwiseTest {
 
 	@Test

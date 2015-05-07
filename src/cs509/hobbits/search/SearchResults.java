@@ -10,8 +10,8 @@ import java.util.Iterator;
 import java.util.Locale;
 
 /**
- * @author		Xu Han		<xhan@wpi.edu>
- * @version		0.5	
+ * @author		Xu Han		xhan@wpi.edu
+ * @version		1.17	
  * @since		2015-04-08	
  * 
  * This is the class to search possible reasonable flight plans depends on the requirements

@@ -1,9 +1,8 @@
 package cs509.hobbits.search;
 /**
- * This is the class to add string at the end of URL to get flight information list from the server
- *
- * @author Xu Han 
- * 
+ * @author		Xu Han		xhan@wpi.edu
+ * @version		1.17	
+ * @since		2015-04-08	
  */
 
 public class QueryFactory {

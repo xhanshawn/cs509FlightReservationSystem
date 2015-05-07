@@ -3,9 +3,9 @@ package cs509.hobbits.search;
 import java.util.ArrayList;
 
 /**
- * @author		Xu Han		<xhan@wpi.edu>
- * @version		0.5	
- * @since		2015-04-08	
+ * @author		Xu Han		xhan@wpi.edu
+ * @version		1.17	
+ * @since		2015-04-08		
  * 
  * This is the class to generalize Flight plans.
  * Flight plan are consisted of a list or two list of Flights. 
@@ -15,6 +15,7 @@ import java.util.ArrayList;
 public class FlightPlan {
 	
 	//These final parameters are assumed in the system
+	final private static boolean DEP = false;
 	final private static boolean ARR = false;
 	final private static boolean FIRST = true;
 	final private static boolean COACH = false;
@@ -124,7 +125,7 @@ public class FlightPlan {
 		if (round_trip==false)  return false;
 		
 		if(depart_plan.get(depart_plan.size()-1).getDATime(ARR).getTime() + _window*60*1000l<
-				return_plan.get(0).getDATime(ARR).getTime()) return true;
+				return_plan.get(0).getDATime(DEP).getTime()) return true;
 
 		return false;
 	}

@@ -144,8 +144,10 @@
 
 				if(radio[0].checked) {
 
+
 					var return_date = document.getElementById("arr").value;
 					has_ret_date = checkDateInput(return_date);
+					if(parseInt(return_date.split('/')[1]) < parseInt(depart_date.split('/')[1])) has_ret_date = false;
 				}
 
 

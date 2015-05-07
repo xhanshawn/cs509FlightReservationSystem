@@ -6,9 +6,14 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-
-/*
- * This class is used to post server
+/**
+ * @author		Yuzhou Xu		
+ * @version		1.17	
+ * @since		2015-04-08	
+ * It is a Utility Class that sends the POST methods to the backend the database
+ * it offers the function of locking and unlocking the database,
+ * as well as fetch the flight number and seating information when called to handle
+ *  the function of reserving the tickets
  */
 public class ReserveAndLockDB{
 

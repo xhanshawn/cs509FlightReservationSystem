@@ -1,8 +1,8 @@
 package cs509.hobbits.search;
 
 /**
- * @author		Xu Han			<xhan@wpi.edu>
- * @version		0.5	
+ * @author		Xu Han		xhan@wpi.edu
+ * @version		1.17	
  * @since		2015-04-08	
  * 
  * This is the class to generalize Airplanes and set attributes of airplane

@@ -15,8 +15,8 @@ import cs509.hobbits.search.ListToXMLBuilder;
 import cs509.hobbits.search.SearchResults;
 
 /**
- * @author		Xu Han		<xhan@wpi.edu>
- * @version		0.5	
+ * @author		Xu Han     xhan@wpi.edu		
+ * @version		1.17	
  * @since		2015-04-08	
  * 
  * This is a utility to make responses for corresponding HttpServeletRequest
@@ -124,11 +124,15 @@ public class ResponseFactory {
   			}
   			
   			//combine and filter results.
+  			
+  			float standard_price = 0f;
   			for(int i=0; i<departs.size(); i++){
   				
   				int j=0;
   				
   				while(j<returns.size()){
+  					
+  					int total = i*returns.size()+j;
   					
   					FlightPlan temp = new FlightPlan(null);
   					
@@ -137,11 +141,18 @@ public class ResponseFactory {
   					{
   						
   						temp.buildReturnPlan(departs.get(i), returns.get(j));;
-  						if(temp.checkRoundTrip(window)) results.add(temp);
   						
+  						if(temp.checkRoundTrip(window)) {
+  							if(total<400||(total>=400&&temp.getPrice(false)<standard_price)) {
+  								if(standard_price == 0f) standard_price = temp.getPrice(false);
+  								if(total>=400) standard_price =  Math.min(standard_price,temp.getPrice(false));
+  								results.add(temp);
+  							}
+  						}
   					}
   					j++;
   				}
+
   			}
   		}
 		

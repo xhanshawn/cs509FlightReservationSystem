@@ -1,10 +1,4 @@
 package cs509.hobbits.search;
-/**
- * This is the class to generalize Local Time of depart places or arrival places
- * 
- * @author Xu Han 
- * 
- */
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -12,16 +6,19 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-
-
+/**
+ * @author		Xu Han		xhan@wpi.edu
+ * @version		1.17	
+ * @since		2015-04-08	
+ * 
+ * This is the class to generalize Local Time of depart places or arrival places
+ * It has been refactored by extending Data class API. It also has some utility functions
+ */
 
 public class LocalTime extends Date {
 	
 	private String offset_time_str;
-	
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = -7069728987148131849L;
 
 	public LocalTime(){
@@ -29,7 +26,11 @@ public class LocalTime extends Date {
 		offset_time_str = null;
 	}
 	
-	
+	/* *
+	 * Convert the GMT time to LocalTime based on the time zone information
+	 * The correct offset calculation needs timezone information and DST information
+	 * we can do it locally to save time
+	 */
 	@SuppressWarnings("deprecation")
 	public String toOffsetTimeString(Airport airport){
 		
@@ -50,6 +51,9 @@ public class LocalTime extends Date {
 		return offset_time_str;
 	}
 	
+	/* *
+	 * Get the offset of DST based on the input date
+	 */
 	public static long getDSTOffset(Date da){
 		
 		SimpleDateFormat date_format = new SimpleDateFormat("E yyyy MM dd HH:mm");
@@ -76,6 +80,9 @@ public class LocalTime extends Date {
 		return -3600;
 	}
 	
+	/* *
+	 * This acts as a utility to parse the localtime to date code in GMT for querying in the database
+	 */
 	public static String parseToDateCode(LocalTime lc){
 		
 		SimpleDateFormat date_format = new SimpleDateFormat("yyyy_MM_dd HH:mm z");
@@ -88,6 +95,9 @@ public class LocalTime extends Date {
 		
 	}
 	
+	/* *
+	 * This acts as a utility to parse the local time string to local time instances
+	 */
 	public static LocalTime parseStringToLocalTime(String lc_str){
 		
 		SimpleDateFormat date_format = new SimpleDateFormat("yyyy MMM dd HH:mm z",Locale.ENGLISH);
@@ -104,5 +114,4 @@ public class LocalTime extends Date {
 		
 		return parsed_lc;
 	}
-	
 }

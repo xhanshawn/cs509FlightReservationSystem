@@ -6,6 +6,12 @@ import org.junit.Test;
 
 import cs509.hobbits.search.Airplane;
 
+/**
+ * @author		Xu Han     xhan@wpi.edu		
+ * @version		1.17	
+ * @since		2015-04-08	 
+ */
+
 public class AirplaneTest {
 
 	

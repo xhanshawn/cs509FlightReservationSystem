@@ -9,10 +9,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
-
 /**
- * Servlet implementation class PurchaseTickets
+ * @author		Yuzhou Xu		
+ * @version		1.17	
+ * @since		2015-04-08	
+ *  It is the main Servlet class that serves as the Interface of our Controller,
+ *  The main function is to interact with the front end 
+ *  when the user request a POST method and call the corresponding the Utility Class.
  */
 
 @WebServlet("/purchasetickets")

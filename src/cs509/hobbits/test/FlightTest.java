@@ -11,6 +11,11 @@ import cs509.hobbits.search.LocalTime;
 import cs509.hobbits.search.Airport;
 import cs509.hobbits.search.Airplane;
 
+/**
+ * @author		Yuzhou Xu	
+ * @version		1.17	
+ * @since		2015-04-08	 
+ */
 
 
 public class FlightTest {

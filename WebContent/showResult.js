@@ -1372,8 +1372,8 @@ var flight_hide = new Array();
 flight_hide[9] = $('.Flight');
 
 	function filter(){
-		var flight_filter = $(".Flight").not($('.Flight:hidden'));
-		var flight_fit = $(".Flight").not($('.Flight:hidden'));
+		var flight_filter = $(".Flight");
+		var flight_fit = $(".Flight");
 		for(var i=0; i<8; i++)
 		{
 			if(filter_flag[i] == 1)
@@ -1601,7 +1601,9 @@ function sortByFlightTime(items) {
 
 
 	var current_num=1;
-	var current_tags
+	var current_tags;
+	var clicked;
+
         function paginate(pag_divs){
 
         	var itemsOnPage = 10;
@@ -1613,10 +1615,12 @@ function sortByFlightTime(items) {
         			$('.pagination').find("ul").append("<li>"+ i +"</li>");
         		}
         	}
-
         	$('.pagination').find("ul li").on('click',function(){
         		current_num = $(this).text();
+        		clicked = true;
         	});
+
+        	
 
 			var itemsToHide= pag_divs.filter(":lt("+(itemsOnPage*(current_num-1))+")");
 				      
@@ -1632,6 +1636,12 @@ function sortByFlightTime(items) {
 		    var itemsToShow = pag_divs.not(itemsToHide);
 			itemsToShow.show();
 
+			if(clicked){
+        		filter();
+        		filter_show();
+        		clicked = false; 
+        	}
+
 
         }
 
@@ -1641,6 +1651,7 @@ function controlDivs(){
 	filterCheck();
 	sortByPrice();
 	paginate($('.Flight'));
+
 // }
 
 }

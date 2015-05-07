@@ -21,8 +21,8 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
- * @author		Xu Han		<xhan@wpi.edu>
- * @version		0.5	
+ * @author		Xu Han		xhan@wpi.edu
+ * @version		1.17	
  * @since		2015-04-08	
  * 
  * This is the Utility class to retrieve date from server including airport list, airplane list

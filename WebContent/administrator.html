@@ -10,8 +10,8 @@
 	function queryDB(){
 		
 		var date_code = $('#date-code').val();
-		var airport = $('airport').val();
-		var url = "http://cs509.cs.wpi.edu:8181/CS509.server/ReservationSystem?team=Team08&action=list&list_type=departing&airport=LAX&day=2015_05_" + date_code;
+		var airport = $('#airport').val();
+		var url = "http://cs509.cs.wpi.edu:8181/CS509.server/ReservationSystem?team=Team08&action=list&list_type=departing&airport="+airport+"&day=2015_05_" + date_code;
 		
 		window.open(url);
 		
