@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+    	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>HobbitsFlight-Homepage</title>
+		<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+		<link rel="stylesheet" href="css/datepicker.css">
+        <link rel="stylesheet" href="css/bootstrap.css">
+		<link rel="stylesheet" href="include/ui-1.10.0/ui-lightness/jquery-ui-1.10.0.custom.min.css" type="text/css" />
+		<link rel="stylesheet" href="jquery.ui.timepicker.css?v=0.3.3" type="text/css" />
+        <link rel="stylesheet" href="css/autocomplete.css">
+        <link rel="stylesheet" href="css/head.css">
+		<!--style for timepicker-->
+		
+		<!--javascript for timepicker-->
+		<!--<script type="text/javascript" src="include/jquery-1.9.0.min.js"></script>-->
+
+
+
+	
+		<script src="js/jquery.js"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+		<script type="text/javascript" src="include/ui-1.10.0/jquery.ui.core.min.js"></script>
+		<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+		<script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+        <script src="js/bootstrap-datepicker.js"></script>
+		<script type="text/javascript" src="jquery.ui.timepicker.js"></script>
+        <script type="text/javascript">
+        
+            // When the document is ready
+            $(document).ready(function () {
+                
+                $('.date1').datepicker({
+                    startView: 1
+                });
+				
+				$('#wt').timepicker({
+                    hours: {
+                            starts: 0,
+                            ends: 24
+                    },
+					minutes: { interval: 5 },
+					minTime: { hour: 0, minute: 30 },
+					maxTime: { hour: 24, minute: 00 },
+                    rows: 5,
+                    showPeriodLabels: false,
+                    showPeriod: false,
+                });
+				
+				var radio = document.getElementsByName("oneway");
+				if(!radio[0].checked) {
+					document.getElementById("arr").style.visibility="hidden";
+		           	document.getElementById("arrlabel").style.visibility="hidden";
+		           	document.getElementById("but").style.visibility="visible";
+					
+				}
+            
+            });
+		</script>
+			
+			
+			
+		<!-- This part is for autocomplete    -->
+		
+		<script>
+	
+		var airportList = [];
+		
+		var airport_count = 0;  
+		  $(document).ready(function(){
+	    
+
+		          $.ajax({
+					  type: "GET",
+					  url: "http://default-environment-kmx2ref3wn.elasticbeanstalk.com/HobbitsFlight?AccessKey=TeamHobbits&&action=List&&list_type=airports",
+					  dataType: "xml",
+					  error: function() {
+					  alert("The XML File could not be processed correctly.");
+					  },
+				   	  success: function(xml){
+				      	 $(xml).find("Airport").each(function(){
+							 var ap = $(this);
+					  	     var code = ap.attr("Code");
+							 var airport_name = ap.attr("Name");
+
+		   	                 airportList[airport_count] = code+", "+airport_name;
+							 airport_count = airport_count+1;	
+				      	 });
+				  
+		          }});
+	     
+		  });	  
+	  
+		$(function() {
+	    
+		
+		
+		    $( "#depart" ).autocomplete({
+				source: airportList
+		    });
+			
+		    $( "#arrival" ).autocomplete({
+				source: airportList
+		    });
+			
+		  });
+	
+			function setInvi() {
+				
+  				document.getElementById("arr").style.visibility="visible";
+  				document.getElementById("arrlabel").style.visibility="visible";
+				
+			}
+			function setVisible() {
+           	
+			document.getElementById("arr").style.visibility="hidden";
+           	document.getElementById("arrlabel").style.visibility="hidden";
+           	document.getElementById("but").style.visibility="visible";
+			
+			
+			}
+			function getFlightPlan(){
+				var radio = document.getElementsByName("oneway");
+				
+				var dep_airport = document.getElementById("depart").value.substring(0,3);
+				var arr_airport = document.getElementById("arrival").value.substring(0,3);
+
+
+
+				var dep_has = false;
+				var arr_has = false;
+				for(var i=0; i<airportList.length; i++){
+					if(dep_airport == airportList[i].substring(0,3)) dep_has = true;
+					if(arr_airport == airportList[i].substring(0,3)) arr_has = true;
+				}
+
+				
+				var has_ret_date = false;
+
+				var depart_date = document.getElementById("dep").value;
+				var has_dep_date = checkDateInput(depart_date);
+
+
+				if(radio[0].checked) {
+
+
+					var return_date = document.getElementById("arr").value;
+					has_ret_date = checkDateInput(return_date);
+					if(parseInt(return_date.split('/')[1]) < parseInt(depart_date.split('/')[1])) has_ret_date = false;
+				}
+
+
+
+				if(!dep_has||!arr_has||!has_dep_date||(radio[0].checked&&!has_ret_date)) {
+					if(!dep_has||!arr_has) alert('invalid airport input! please Check');
+					else alert('invalid date input! please Check');
+
+				}else{
+				//change by jarway by 20:03 2015/4/26#1
+				var window_time = Number(document.getElementById("wt").value.split(":")[0])*60+Number(document.getElementById("wt").value.split(":")[1]);
+				
+
+
+				if(radio[0].checked) {
+
+					if(document.getElementById("wt").value == ""){
+						
+
+						window.location.href='SearchResults.html?depart='+ dep_airport + '&arrival=' + arr_airport + '&depart_date=' + document.getElementById("dep").value+'&return_date='+document.getElementById("arr").value;
+					}
+					else{
+						window.location.href='SearchResults.html?depart='+ dep_airport + '&arrival=' + arr_airport + '&depart_date=' + document.getElementById("dep").value+'&return_date='+document.getElementById("arr").value+'&window='+window_time;
+					}
+				}
+				else{
+					if(document.getElementById("wt").value == ""){
+						window.location.href = 'SearchResults.html?depart=' + dep_airport + '&arrival=' + arr_airport + '&depart_date=' + document.getElementById("dep").value;
+					}
+					else{
+						window.location.href = 'SearchResults.html?depart=' + dep_airport + '&arrival=' + arr_airport + '&depart_date=' + document.getElementById("dep").value+'&window='+window_time;
+					}
+				}
+				//change by jarway by 20:03 2015/4/26#1 end
+			}
+			}		   
+			//change by jarway by 20:03 2015/4/26#2 
+			//change by jarway by 20:03 2015/4/26#2 end
+
+			function checkDateInput(date_input){
+
+				if(date_input==""||date_input==NaN) return false;
+				var numbers = date_input.split("/");
+				var year = parseInt(numbers[2]);
+				var month = parseInt(numbers[0]);
+				var day = parseInt(numbers[1]);
+				if(year==2015&& month ==5 && day <=17&& day>=8) return true;
+					else return false;
+
+			}
+		</script>
+</head>
+
+
+
+<body>
+
+
+	<div id="hobbits-head">
+		<img src="Hobbits-black.jpg" id="hobbits-logo">
+			<span id="hobbits-logo-char">Hobbits Flight</span></img>
+	</div>
+	<br>
+	<br>
+
+	<div id="showmaps" class="search-div">
+	<img src="hobbits.jpg" id="showmaps-pic"> 
+	</div>
+	<br>
+	<div id="SearchTypes" class="search-div">
+
+	<div class="BlockSearchTypes">
+		<span class="SearchTypes">
+			<input class="bottonset hidden" id="roundtrip" onclick="setInvi()" name="oneway" type="radio" value="n" checked="checked" />
+			<lable class="bottonset-lable hidden" id="roundtrip-lable" for="roundtrip" title="roundtirp" role="botton"><span>Round-trip</span>
+			</lable>
+			<input class="bottonset hidden" id="onewaytrip" name="oneway" onclick="setVisible()" type="radio" value="y" />
+			<lable class="bottonset-lable hidden" id="onewaytrip-lable" for="onewaytrip" title="One-way" role="botton"><span>One-way</span>
+			</lable>
+		</span>
+	</div>
+	<br>
+
+	<div id="FlightSearch" display="inline">	
+		
+		From<input type="text" id="depart" style="width:100px;"></input>
+		To<input type="text" id="arrival" style="width:100px;"></input>
+		
+	<!--<input type="text" id="depart_date">Depart</input>
+	-->
+	
+    Departure Date <input type="text" style = "width:70px;" class="date1" id="dep"/>     
+    <!--change by jarway by 20:03 2015/4/26#3--> 
+	<span id="arrlabel"> Return Date </span><input type="text" style = "width:70px;" id="arr" class="date1"/>
+
+	<!--Window Time <input type="time" id="wt" class = "windt" style = "width:80px;" min="00:30" max="24:01" onchange="wtc();"/>
+	-->
+	Maximum Layover Time<input type="text" style="width: 70px" id="wt" value="00:30">	
+	</div>
+	<div>
+	
+    <button id="but" type="button" onclick=getFlightPlan()>SEARCH</button>
+	
+	
+	</div>
+		
+
+	
+	</div>
+	
+	<!--change by jarway by 20:03 2015/4/26#3 end--> 
+
+</body>
+
+
+</html>
